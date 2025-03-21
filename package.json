@@ -7,17 +7,21 @@
     "_dev": "ts-node src/main.ts",
     "dev": "nodemon -e ts --exec ts-node src/main.ts",
     "build": "tsc",
-    "start": "tsc && node ./dist/main.js"
+    "start": "tsc && node ./dist/main.js",
+    "test": "jest --coverage"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^5.0.1",
     "@types/jsonwebtoken": "^9.0.9",
+    "jest": "^29.7.0",
     "nodemon": "^3.1.9",
+    "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"
   },
