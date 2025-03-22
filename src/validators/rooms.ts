@@ -1,5 +1,5 @@
-import Joi from "joi";
-import {CinemaRoomBody} from "../db/models/CinemaRoom";
+import Joi from "joi"
+import {CinemaRoomBody} from "../db/models/CinemaRoom"
 
 export const createCinemaRoomValidator = Joi.object<CinemaRoomBody>({
     name: Joi.string().required(),
