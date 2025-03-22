@@ -25,6 +25,7 @@ services:
     container_name: my-app
     build:
       context: .
+      dockerfile: development.Dockerfile
     volumes:
       - ./src:/app/src
     ports:

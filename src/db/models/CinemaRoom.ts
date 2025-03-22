@@ -1,30 +1,42 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
-@Entity({name:"rooms"})
-export class CinemaRoom{
+@Entity({name: "rooms"})
+export class CinemaRoom {
     @PrimaryGeneratedColumn()
-    id:number
+    id: number
 
     @Column()
-    name:string
+    name: string
 
     @Column()
-    description:string
+    description: string
 
     @Column()
-    images: ImageData[]
+    images: MediaImage[]
 
     @Column()
-    type:string
+    type: string
 
     @Column()
-    capacity:number
+    capacity: number
 
     @Column()
-    disabledAccess:boolean
+    disabledAccess: boolean
+
+    @Column()
+    onMaintenance:boolean
 
 
-    constructor(id: number, name: string, description: string, images: ImageData[], type: string, capacity: number, disabledAccess: boolean) {
+    constructor(
+        id: number,
+        name: string,
+        description: string,
+        images: MediaImage[],
+        type: string,
+        capacity: number,
+        disabledAccess: boolean,
+        onMaintenance: boolean
+    ) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -32,5 +44,16 @@ export class CinemaRoom{
         this.type = type;
         this.capacity = capacity;
         this.disabledAccess = disabledAccess;
+        this.onMaintenance = onMaintenance;
     }
+}
+
+export interface CinemaRoomBody{
+    name: string,
+    description: string,
+    images: MediaImage[],
+    type: string,
+    capacity: number,
+    disabledAccess: boolean,
+    onMaintenance: boolean
 }
