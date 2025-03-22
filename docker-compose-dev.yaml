@@ -1,7 +1,8 @@
 services:
   postgres:
     image: postgres:latest
-    container_name: postgres_db
+    container_name: postgres_db_dev
+    restart: always
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
@@ -13,7 +14,7 @@ services:
 
   adminer:
     image: adminer
-    container_name: adminer_ui
+    container_name: adminer_ui_dev
     ports:
       - "8080:8080"
     depends_on:
@@ -22,12 +23,13 @@ services:
       ADMINER_DEFAULT_SERVER: postgres
 
   app:
-    container_name: my-app
+    container_name: my-app_dev
     build:
       context: .
-      dockerfile: development.Dockerfile
+      dockerfile: "./docker/dev/Dockerfile"
     volumes:
       - ./src:/app/src
+    restart: always
     ports:
       - "3000:3000"
     environment:
