@@ -1,14 +1,14 @@
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 
-dotenv.config();
+dotenv.config()
 
 export interface Configuration {
-    dbName: string;
-    dbPassword: string;
-    dbUser: string;
-    dbSynchronise: boolean;
-    dbHost: string;
-    accessTokenSecret: string;
+    dbName: string
+    dbPassword: string
+    dbUser: string
+    dbSynchronise: boolean
+    dbHost: string
+    accessTokenSecret: string
 }
 
 const initConfig = (): Configuration => {
@@ -19,10 +19,10 @@ const initConfig = (): Configuration => {
         DB_SYNCHRONISE,
         DB_HOST,
         ACCESS_TOKEN_SECRET,
-    } = process.env;
+    } = process.env
 
     if (!DB_NAME || !DB_PASSWORD || !DB_SYNCHRONISE || !DB_USER || !DB_HOST || !ACCESS_TOKEN_SECRET) {
-        throw new Error("Missing environment variables");
+        throw new Error("Missing environment variables")
     }
 
     return {
@@ -32,7 +32,7 @@ const initConfig = (): Configuration => {
         dbSynchronise: DB_SYNCHRONISE.toLowerCase() === "true",
         dbHost: DB_HOST,
         accessTokenSecret: ACCESS_TOKEN_SECRET,
-    };
-};
+    }
+}
 
-export const config: Readonly<Configuration> = initConfig();
+export const config: Readonly<Configuration> = initConfig()

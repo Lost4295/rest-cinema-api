@@ -1,4 +1,4 @@
-import {Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
 import {Movie} from './Movie'
 
 @Entity({name: "sessions"})
@@ -20,10 +20,10 @@ export class CinemaSession {
         endDate: Date,
         movie: Movie
     ) {
-        this.id = id;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.movie = movie;
+        this.id = id
+        this.startDate = startDate
+        this.endDate = endDate
+        this.movie = movie
     }
 }
 

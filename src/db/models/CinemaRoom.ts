@@ -1,4 +1,4 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, PrimaryGeneratedColumn} from "typeorm"
 
 @Entity({name: "rooms"})
 export class CinemaRoom {
@@ -37,14 +37,14 @@ export class CinemaRoom {
         disabledAccess: boolean,
         onMaintenance: boolean
     ) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.images = images;
-        this.type = type;
-        this.capacity = capacity;
-        this.disabledAccess = disabledAccess;
-        this.onMaintenance = onMaintenance;
+        this.id = id
+        this.name = name
+        this.description = description
+        this.images = images
+        this.type = type
+        this.capacity = capacity
+        this.disabledAccess = disabledAccess
+        this.onMaintenance = onMaintenance
     }
 }
 
