@@ -1,8 +1,8 @@
-import {Application, Request, Response} from "express"
+import {Request, Response} from "express"
 import {AppDataSource} from "../db/database"
 import {CinemaRoom} from "../db/models/CinemaRoom"
 
-class CinemaRoomController {
+export class CinemaRoomController {
     async get(req:Request, res:Response){
         const roomRepository = AppDataSource.getRepository(CinemaRoom)
         const rooms = await roomRepository.find()
@@ -22,13 +22,4 @@ class CinemaRoomController {
 
         res.status(200).send("one")
     }
-}
-
-export const cinemaRoomController = (app: Application) => {
-    const cinemaRoomController = new CinemaRoomController()
-    app.get('/',cinemaRoomController.get)
-    app.post('/',cinemaRoomController.post)
-    app.put('/',cinemaRoomController.put)
-    app.delete('/',cinemaRoomController.delete)
-    app.get('/:id',cinemaRoomController.getOne)
 }

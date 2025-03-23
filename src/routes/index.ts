@@ -1,14 +1,21 @@
 import { Application, Request, Response } from "express"
-import {cinemaRoomController} from "../controllers/CinemaRoomController"
-import {movieController} from "../controllers/MovieController"
-import { cinemaSessionController } from "../controllers/CinemaSessionController"
+import { cinemaSessionRoutes } from "./cinemaSessionRoutes"
+import { cinemaRoomRoutes } from "./cinemaRoomRoutes"
+import { movieRoutes } from "./movieRoutes"
 
 export const routesHandler = (app: Application) => {
   app.get('/', (req: Request, res: Response) => {
     res.json({ message: 'Hello World' })
   })
 
-  app.use('/sessions', cinemaSessionController)
-  app.use('/rooms', cinemaRoomController)
-  app.use('/movies', movieController)
+  app.use('/sessions', cinemaSessionRoutes)
+  app.use('/rooms', cinemaRoomRoutes)
+  app.use('/movies', movieRoutes)
+
+  // app.use('/users', userRoutes)
+  // app.use('/administrators', administratorRoutes)
+  // app.use('/employees', employeeRoutes)
+
+  // app.use('/tickets', ticketRoutes)
+  // app.use('/stats', statsRoutes)
 }
