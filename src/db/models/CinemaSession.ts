@@ -34,5 +34,5 @@ export interface CinemaSessionBody{
     id: number,
     startDate: Date,
     endDate: Date,
-    movie: number
+    movie: Movie
 }

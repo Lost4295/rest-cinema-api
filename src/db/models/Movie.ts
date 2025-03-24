@@ -27,3 +27,9 @@ export class Movie {
         this.sessions = sessions
     }
 }
+
+export interface MovieBody {
+    id: number,
+    name: string,
+    duration: number,
+}

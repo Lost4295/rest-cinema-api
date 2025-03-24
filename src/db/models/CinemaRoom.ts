@@ -49,6 +49,7 @@ export class CinemaRoom {
 }
 
 export interface CinemaRoomBody{
+    id: number,
     name: string,
     description: string,
     images: string[],
