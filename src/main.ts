@@ -1,6 +1,7 @@
 import express from 'express'
 import { AppDataSource } from './db/database'
 import { routesHandler } from './routes'
+import {TspecDocsMiddleware} from "tspec";
 
 const app = async () => {
   const app = express()
@@ -8,6 +9,8 @@ const app = async () => {
 
   app.use(express.json())
   routesHandler(app)
+  // @ts-ignore
+  app.use('/docs', await TspecDocsMiddleware());
 
   try {
     await AppDataSource.initialize()

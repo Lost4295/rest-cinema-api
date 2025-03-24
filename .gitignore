@@ -1,4 +1,9 @@
-node_modules
+.idea/
+.vscode/
+node_modules/
 dist
 .env
 coverage
+build/
+tmp/
+temp/

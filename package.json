@@ -6,6 +6,7 @@
   "scripts": {
     "_dev": "ts-node src/main.ts",
     "dev": "concurrently \"nodemon -e ts --exec ts-node src/main.ts\" \"npm run lint:watch\"",
+    "start:dev": "nodemon -e ts --exec ts-node src/main.ts",
     "build": "tsc",
     "start": "tsc && node ./dist/main.js",
     "test": "jest --coverage",
@@ -40,6 +41,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.14.1",
+    "tspec": "^0.1.116",
     "typeorm": "^0.3.21"
   }
 }
