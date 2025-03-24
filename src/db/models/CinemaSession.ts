@@ -6,15 +6,16 @@ import {JoinColumn} from "typeorm";
 export class CinemaSession {
     @PrimaryGeneratedColumn()
     id: number
+
     @Column({type: "timestamptz"})
     startDate: Date
 
     @Column({type: "timestamptz"})
     endDate: Date
-    @ManyToOne(()=> Movie, (movie)=> movie.sessions)
+
+    @ManyToOne(() => Movie, movie => movie.sessions)
     @JoinColumn({name:"movie_id"})
     movie: Movie
-
 
     constructor(
         id: number,

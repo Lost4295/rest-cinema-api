@@ -2,6 +2,7 @@ import { Application, Request, Response } from "express"
 import { cinemaSessionRoutes } from "./cinemaSessionRoutes"
 import { cinemaRoomRoutes } from "./cinemaRoomRoutes"
 import { movieRoutes } from "./movieRoutes"
+import { userRoutes } from "./user/userRoutes"
 
 export const routesHandler = (app: Application) => {
   app.get('/', (req: Request, res: Response) => {
@@ -12,7 +13,7 @@ export const routesHandler = (app: Application) => {
   app.use('/rooms', cinemaRoomRoutes)
   app.use('/movies', movieRoutes)
 
-  // app.use('/users', userRoutes)
+  app.use('/users', userRoutes)
   // app.use('/administrators', administratorRoutes)
   // app.use('/employees', employeeRoutes)
 
