@@ -11,8 +11,8 @@ export class CinemaRoom {
     @Column()
     description: string
 
-    @Column()
-    images: MediaImage[]
+    @Column({type:"text", array:true})
+    images: string[]
 
     @Column()
     type: string
@@ -31,7 +31,7 @@ export class CinemaRoom {
         id: number,
         name: string,
         description: string,
-        images: MediaImage[],
+        images: string[],
         type: string,
         capacity: number,
         disabledAccess: boolean,
@@ -51,7 +51,7 @@ export class CinemaRoom {
 export interface CinemaRoomBody{
     name: string,
     description: string,
-    images: MediaImage[],
+    images: string[],
     type: string,
     capacity: number,
     disabledAccess: boolean,
