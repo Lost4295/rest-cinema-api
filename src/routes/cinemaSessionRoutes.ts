@@ -1,11 +1,12 @@
-import { Application } from "express"
+import { Router } from "express"
 import { CinemaSessionController } from "../controllers/CinemaSessionController"
 
-export const cinemaSessionRoutes = (app: Application) => {
-    const cinemaSessionController = new CinemaSessionController()
-    app.get('/',cinemaSessionController.get)
-    app.post('/',cinemaSessionController.post)
-    app.put('/',cinemaSessionController.put)
-    app.delete('/',cinemaSessionController.delete)
-    app.get('/:id/tickets',cinemaSessionController.getOneTiekets)
-}
+export const cinemaSessionRoutes = Router()
+
+const cinemaSessionController = new CinemaSessionController()
+
+cinemaSessionRoutes.get("/", cinemaSessionController.get)
+cinemaSessionRoutes.post("/", cinemaSessionController.post)
+cinemaSessionRoutes.put("/", cinemaSessionController.put)
+cinemaSessionRoutes.delete("/", cinemaSessionController.delete)
+cinemaSessionRoutes.get("/:id/tickets", cinemaSessionController.getOneTiekets)
