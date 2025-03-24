@@ -1,11 +1,12 @@
-import { Application } from "express"
+import { Router } from "express"
 import { MovieController } from "../controllers/MovieController"
 
-export const movieRoutes = (app: Application) => {
-  const movieController = new MovieController()
-  app.get('/',movieController.get)
-  app.post('/',movieController.post)
-  app.put('/',movieController.put)
-  app.delete('/',movieController.delete)
-  app.get('/:id',movieController.getOne)
-}
+export const movieRoutes = Router()
+
+const movieController = new MovieController()
+
+movieRoutes.get("/", movieController.get)
+movieRoutes.post("/", movieController.post)
+movieRoutes.put("/", movieController.put)
+movieRoutes.delete("/", movieController.delete)
+movieRoutes.get("/:id", movieController.getOne)

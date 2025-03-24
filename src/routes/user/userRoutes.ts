@@ -1,12 +1,12 @@
-import { Application } from "express"
+import { Router } from "express"
 import { UserController } from "../../controllers/users/UserController"
 
-export const userController = (app: Application) => {
-  const userController = new UserController()
-  // TODO: Implement the routes
-  // app.get('/', userController.get)
-  // app.post('/', userController.post)
-  // app.put('/', userController.put)
-  // app.delete('/', userController.delete)
-  // app.get('/:id', userController.getOne)
-}
+export const userRoutes = Router()
+
+const userController = new UserController()
+
+userRoutes.get("/", userController.getAll)
+// userRoutes.post("/", userController.post)
+// userRoutes.put("/", userController.put)
+// userRoutes.delete("/", userController.delete)
+// userRoutes.get("/:id", userController.getOne)
