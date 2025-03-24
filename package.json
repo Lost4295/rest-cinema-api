@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "_dev": "ts-node src/main.ts",
+    "dev:min": "nodemon -e ts --exec ts-node src/main.ts",
     "dev": "concurrently \"nodemon -e ts --exec ts-node src/main.ts\" \"npm run lint:watch\"",
     "build": "tsc",
     "start": "tsc && node ./dist/main.js",

@@ -5,14 +5,15 @@ import {Movie} from './Movie'
 export class CinemaSession {
     @PrimaryGeneratedColumn()
     id: number
+
     @Column({type: "timestamptz"})
     startDate: Date
 
     @Column({type: "timestamptz"})
     endDate: Date
-    @ManyToOne("movie", "sessions")
-    movie: Movie
 
+    @ManyToOne(() => Movie, movie => movie.sessions)
+    movie: Movie
 
     constructor(
         id: number,
