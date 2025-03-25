@@ -1,6 +1,7 @@
 import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
 import {Movie} from './Movie'
 import {JoinColumn} from "typeorm";
+import {CinemaRoom} from "./CinemaRoom";
 
 @Entity({name: "sessions"})
 export class CinemaSession {
@@ -17,16 +18,27 @@ export class CinemaSession {
     @JoinColumn({name:"movie_id"})
     movie: Movie
 
+    @ManyToOne(() => CinemaRoom, room => room.sessions)
+    @JoinColumn({name:"room_id"})
+    room:CinemaRoom
+
+    @Column()
+    tickets:number
+
     constructor(
         id: number,
         startDate: Date,
         endDate: Date,
-        movie: Movie
+        movie: Movie,
+        room:CinemaRoom,
+        tickets:number
     ) {
         this.id = id
         this.startDate = startDate
         this.endDate = endDate
         this.movie = movie
+        this.room = room
+        this.tickets = tickets
     }
 }
 

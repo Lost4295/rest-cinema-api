@@ -19,12 +19,11 @@ export class Movie {
         id: number,
         name: string,
         duration: number,
-        sessions: CinemaSession[]
     ) {
         this.id = id
         this.name = name
         this.duration = duration
-        this.sessions = sessions
+        this.sessions = []
     }
 }
 

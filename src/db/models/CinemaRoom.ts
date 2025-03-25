@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm"
+import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm"
+import {CinemaSession} from "./CinemaSession";
 
 @Entity({name: "rooms"})
 export class CinemaRoom {
@@ -26,6 +27,8 @@ export class CinemaRoom {
     @Column()
     onMaintenance:boolean
 
+    @OneToMany(() => CinemaSession, session => session.room)
+    sessions: CinemaSession[]
 
     constructor(
         id: number,
@@ -45,6 +48,7 @@ export class CinemaRoom {
         this.capacity = capacity
         this.disabledAccess = disabledAccess
         this.onMaintenance = onMaintenance
+        this.sessions = []
     }
 }
 

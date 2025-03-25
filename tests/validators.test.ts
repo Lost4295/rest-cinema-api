@@ -251,7 +251,7 @@ describe("Session validator", () => {
         }
         const validator = createCinemaSessionValidator.validate(body)
         expect(validator.error).not.toBe(undefined);
-        expect(validator.error?.message).toBe("\"name\" must be a string. \"duration\" must be a number")
+        expect(validator.error?.message).toBe("\"startDate\" must be a valid date. \"endDate\" is required.")
     })
     test('createValidator is valid ', () => {
         const body = {
@@ -307,22 +307,24 @@ describe("Session validator", () => {
         }
         const validator = updateCinemaSessionValidator.validate(body)
         expect(validator.error).not.toBe(undefined);
-        expect(validator.error?.message).toBe("\"value\" must contain at least one of [name, duration]")
+        expect(validator.error?.message).toBe("\"value\" must contain at least one of [startDate, endDate, movie]")
     });
     test('update Validator is valid ', () => {
         const body = {
             id: 5,
-            duration: 60
+            startDate: 60
         }
         const validator = updateCinemaSessionValidator.validate(body)
         expect(validator.error).toBe(undefined);
-        expect(validator.value!.duration).toBe(body.duration)
+        expect(validator.value!.startDate).toBe(body.startDate)
         const body2 = {
             id: 5,
-            name: "somename",
+            endDate:5263,
+            movie:8451
         }
         const validator2 = updateMovieValidator.validate(body2)
         expect(validator2.error).toBe(undefined);
-        expect(validator2.value!.name).toBe(body2.name)
+        expect(validator2.value!.movie).toBe(body2.movie)
+        expect(validator2.value!.endDate).toBe(body2.endDate)
     })
 })

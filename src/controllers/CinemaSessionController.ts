@@ -1,6 +1,10 @@
 import {Request, Response} from "express"
 import {AppDataSource} from "../db/database"
-import {createCinemaSessionValidator, updateCinemaSessionValidator} from "../validators/session";
+import {
+    cinemaSessionIdValidator,
+    createCinemaSessionValidator,
+    updateCinemaSessionValidator
+} from "../validators/session";
 import {CinemaSession} from "../db/models/CinemaSession";
 import {Movie} from "../db/models/Movie";
 
@@ -56,10 +60,42 @@ export class CinemaSessionController {
     }
 
     async delete(req: Request, res: Response) {
-        res.status(200).send("delete")
+        const idValidator = cinemaSessionIdValidator.validate(req.query)
+        if (idValidator.error){
+            console.log(idValidator.error)
+            res.status(400).send(idValidator.error.details)
+            return
+        }
+        const value = idValidator.value.id;
+        const repo = AppDataSource.getRepository(CinemaSession)
+        const session = await repo.findOneBy({
+            id:value
+        })
+        if (!session){
+            res.status(404).send({"message":"ressource not found"})
+            return
+        }
+        await repo.delete(session)
+        res.status(204).send()
     }
 
     async getOneTickets(req: Request, res: Response) {
-        res.status(200).send("get")
+        const idValidator = cinemaSessionIdValidator.validate(req.query)
+        if (idValidator.error){
+            console.log(idValidator.error)
+            res.status(400).send(idValidator.error.details)
+            return
+        }
+        const value = idValidator.value.id;
+        const repo = AppDataSource.getRepository(CinemaSession)
+        const session = await repo.findOneBy({
+            id:value
+        })
+        if (!session){
+            res.status(404).send({"message":"ressource not found"})
+            return
+        }
+        const remainingTickets = session.room.capacity - session.tickets
+        res.status(200).send({...session, "remaining_tickets":remainingTickets})
     }
 }

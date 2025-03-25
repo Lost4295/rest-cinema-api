@@ -1,7 +1,7 @@
 import {Request, Response} from "express"
 import {AppDataSource} from "../db/database"
 import {Movie} from "../db/models/Movie"
-import {createMovieValidator, updateMovieValidator} from "../validators/movie";
+import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../validators/movie";
 
 export class MovieController {
     async get(req:Request, res:Response){
@@ -39,11 +39,44 @@ export class MovieController {
         await movieRepository.save(body)
         res.status(200).send({"message":"Resspource modified successfully"})
     }
-    async delete(req:Request, res:Response){
-        res.status(200).send("delete")
+    async delete(req: Request, res: Response) {
+        const idValidator = movieIdValidator.validate(req.query)
+        if (idValidator.error){
+            console.log(idValidator.error)
+            res.status(400).send(idValidator.error.details)
+            return
+        }
+        const value = idValidator.value.id;
+        const repo = AppDataSource.getRepository(Movie)
+        const movie = await repo.findOneBy({
+            id:value
+        })
+        if (!movie){
+            res.status(404).send({"message":"ressource not found"})
+            return
+        }
+        await repo.delete(movie)
+        res.status(204).send()
     }
 
+
     async getOne(req:Request, res:Response){
-        res.status(200).send("getOne")
+        //TODO: add filters on period
+        const idValidator = movieIdValidator.validate(req.query)
+        if (idValidator.error){
+            console.log(idValidator.error)
+            res.status(400).send(idValidator.error.details)
+            return
+        }
+        const value = idValidator.value.id;
+        const repo = AppDataSource.getRepository(Movie)
+        const movie = await repo.findOneBy({
+            id:value
+        })
+        if (!movie){
+            res.status(404).send({"message":"ressource not found"})
+            return
+        }
+        res.status(200).send(movie)
     }
 }
