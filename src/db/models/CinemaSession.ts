@@ -1,6 +1,6 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
-import {Movie} from './Movie'
-import {CinemaRoom} from "./CinemaRoom";
+import type {Movie} from './Movie'
+import type {CinemaRoom} from "./CinemaRoom"
 
 @Entity({name: "sessions"})
 export class CinemaSession {
@@ -13,11 +13,11 @@ export class CinemaSession {
     @Column({type: "timestamptz"})
     endDate: Date
 
-    @ManyToOne(() => Movie, movie => movie.sessions)
+    @ManyToOne("movies","sessions")
     @JoinColumn({name:"movie_id"})
     movie: Movie
 
-    @ManyToOne(() => CinemaRoom, room => room.sessions)
+    @ManyToOne("rooms", "sessions")
     @JoinColumn({name:"room_id"})
     room:CinemaRoom
 

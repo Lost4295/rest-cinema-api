@@ -1,8 +1,8 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm"
-import type {CinemaSession} from "./CinemaSession"
+import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm"
+import {TestCinemaSession as CinemaSession} from "./CinemaSession"
 
 @Entity({name: "rooms"})
-export class CinemaRoom {
+export class TestCinemaRoom extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -27,7 +27,7 @@ export class CinemaRoom {
     @Column()
     onMaintenance:boolean
 
-    @OneToMany("sessions","room")
+    @OneToMany(() => CinemaSession, session => session.room)
     sessions: CinemaSession[] | undefined
 
     constructor(
@@ -40,6 +40,7 @@ export class CinemaRoom {
         disabledAccess: boolean,
         onMaintenance: boolean
     ) {
+        super();
         this.id = id
         this.name = name
         this.description = description
@@ -51,13 +52,3 @@ export class CinemaRoom {
     }
 }
 
-export interface CinemaRoomBody{
-    id: number,
-    name: string,
-    description: string,
-    images: string[],
-    type: string,
-    capacity: number,
-    disabledAccess: boolean,
-    onMaintenance: boolean
-}

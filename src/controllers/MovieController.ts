@@ -1,7 +1,8 @@
 import {Request, Response} from "express"
 import {AppDataSource} from "../db/database"
 import {Movie} from "../db/models/Movie"
-import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../validators/movie";
+import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../validators/movie"
+import {TestDataSource} from "../db/tests.database"
 
 export class MovieController {
     async get(req:Request, res:Response){
@@ -14,7 +15,7 @@ export class MovieController {
         if (bodyValidator.error!==undefined){
             console.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
-            return;
+            return
         }
         const body = bodyValidator.value
         const movieRepository = AppDataSource.getRepository(Movie)
@@ -26,7 +27,7 @@ export class MovieController {
         if (bodyValidator.error!==undefined){
             console.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
-            return;
+            return
         }
         const body = bodyValidator.value
         const movieRepository = AppDataSource.getRepository(Movie)
@@ -46,7 +47,7 @@ export class MovieController {
             res.status(400).send(idValidator.error.details)
             return
         }
-        const value = idValidator.value.id;
+        const value = idValidator.value.id
         const repo = AppDataSource.getRepository(Movie)
         const movie = await repo.findOneBy({
             id:value
@@ -68,7 +69,7 @@ export class MovieController {
             res.status(400).send(idValidator.error.details)
             return
         }
-        const value = idValidator.value.id;
+        const value = idValidator.value.id
         const repo = AppDataSource.getRepository(Movie)
         const movie = await repo.findOneBy({
             id:value

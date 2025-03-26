@@ -1,8 +1,8 @@
-import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm"
-import type {CinemaSession} from "./CinemaSession"
+import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm"
+import {TestCinemaSession as CinemaSession } from "./CinemaSession"
 
 @Entity({name: "movies"})
-export class Movie {
+export class TestMovie extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number
 
@@ -12,7 +12,7 @@ export class Movie {
     @Column()
     duration: number
 
-    @OneToMany("sessions","movie")
+    @OneToMany(() => CinemaSession, session => session.movie)
     sessions: CinemaSession[] | undefined
 
     constructor(
@@ -20,14 +20,9 @@ export class Movie {
         name: string,
         duration: number,
     ) {
+        super();
         this.id = id
         this.name = name
         this.duration = duration
     }
-}
-
-export interface MovieBody {
-    id: number,
-    name: string,
-    duration: number,
 }
