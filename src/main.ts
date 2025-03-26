@@ -1,10 +1,11 @@
 import express from 'express'
 import { AppDataSource } from './db/database'
 import { routesHandler } from './routes'
+import { config } from './config/config'
 
 const app = async () => {
   const app = express()
-  const port = 3000
+  const port = config.port
 
   app.use(express.json())
   routesHandler(app)
