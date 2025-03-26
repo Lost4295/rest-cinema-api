@@ -4,9 +4,9 @@ import {
     cinemaSessionIdValidator,
     createCinemaSessionValidator,
     updateCinemaSessionValidator
-} from "../validators/session";
-import {CinemaSession} from "../db/models/CinemaSession";
-import {Movie} from "../db/models/Movie";
+} from "../validators/session"
+import {CinemaSession} from "../db/models/CinemaSession"
+import {Movie} from "../db/models/Movie"
 
 export class CinemaSessionController {
     async get(req: Request, res: Response) {
@@ -33,7 +33,7 @@ export class CinemaSessionController {
         if (bodyValidator.error !== undefined) {
             console.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
-            return;
+            return
         }
         const body = bodyValidator.value
         const sessionRepository = AppDataSource.getRepository(CinemaSession)
@@ -42,7 +42,7 @@ export class CinemaSessionController {
         })
         if (!session) {
             res.status(404).send({"message": "ressource not found"})
-            return;
+            return
         }
         if (body.movie) {
             const movieRepository = AppDataSource.getRepository(Movie)
@@ -66,7 +66,7 @@ export class CinemaSessionController {
             res.status(400).send(idValidator.error.details)
             return
         }
-        const value = idValidator.value.id;
+        const value = idValidator.value.id
         const repo = AppDataSource.getRepository(CinemaSession)
         const session = await repo.findOneBy({
             id:value
@@ -86,7 +86,7 @@ export class CinemaSessionController {
             res.status(400).send(idValidator.error.details)
             return
         }
-        const value = idValidator.value.id;
+        const value = idValidator.value.id
         const repo = AppDataSource.getRepository(CinemaSession)
         const session = await repo.findOneBy({
             id:value

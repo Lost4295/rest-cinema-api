@@ -16,7 +16,7 @@ beforeAll(async () => {
 
 describe('db test', ()=>{
     test('query is ok', async () => {
-        const data = await TestDataSource.query("SELECT 1+1");
+        const data = await TestDataSource.query("SELECT 1+1")
         expect(data[0]["1+1"]).toBe(2)
     })
 })

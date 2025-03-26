@@ -1,11 +1,11 @@
 import { AppDataSource } from './db/database'
-import app from "./app";
-import {TspecDocsMiddleware} from "tspec";
+import app from "./app"
+import {TspecDocsMiddleware} from "tspec"
 
 export const start = async () => {
   const port = 3000
-  // @ts-ignore
-  app.use('/docs', await TspecDocsMiddleware());
+  // @ts-expect-error overload of tspec
+  app.use('/docs', await TspecDocsMiddleware())
 
   try {
     await AppDataSource.initialize()

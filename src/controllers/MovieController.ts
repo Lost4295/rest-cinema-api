@@ -2,7 +2,6 @@ import {Request, Response} from "express"
 import {AppDataSource} from "../db/database"
 import {Movie} from "../db/models/Movie"
 import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../validators/movie"
-import {TestDataSource} from "../db/tests.database"
 
 export class MovieController {
     async get(req:Request, res:Response){

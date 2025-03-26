@@ -1,11 +1,14 @@
-import {CinemaSessionController} from "../controllers/CinemaSessionController";
-import {CinemaRoomController} from "../controllers/CinemaRoomController";
-import {MovieController} from "../controllers/MovieController";
-import {Tspec} from "tspec";
+import {CinemaSessionController} from "../controllers/CinemaSessionController"
+import {CinemaRoomController} from "../controllers/CinemaRoomController"
+import {MovieController} from "../controllers/MovieController"
+import {Tspec} from "tspec"
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cinemaSessionController = new CinemaSessionController()
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cinemaRoomController = new CinemaRoomController()
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const movieController = new MovieController()
 export type sessionSpec = Tspec.DefineApiSpec<{
     tags: ['Sessions'],
@@ -16,36 +19,37 @@ export type sessionSpec = Tspec.DefineApiSpec<{
                 handler: typeof cinemaSessionController.get,
                 responses: { 200: { message: string } }
             },
-            post:{
+            post: {
                 summary: 'TODO: Write this',
                 handler: typeof cinemaSessionController.post,
                 responses: { 200: { message: string } }
             },
         },
-        '/sessions/{id}':{
-            get:{
+        '/sessions/{id}': {
+            get: {
                 summary: 'TODO: finish this',
                 responses: { 200: { message: string } }
             },
-            put:{                summary: 'TODO: Write this',
+            put: {
+                summary: 'TODO: Write this',
                 handler: typeof cinemaSessionController.put,
-                responses: { 200: { message: string } }}
-            delete:{
+                responses: { 200: { message: string } }
+            }
+            delete: {
                 summary: 'TODO: Write this',
                 handler: typeof cinemaSessionController.delete,
                 responses: { 200: { message: string } }
             }
         }
         '/sessions/{id}/tickets': {
-            get:{
+            get: {
                 summary: 'TODO: Write this',
                 handler: typeof cinemaSessionController.getOneTickets,
                 responses: { 200: { message: string } }
             }
         }
     }
-}>;
-
+}>
 
 export type roomSpec = Tspec.DefineApiSpec<{
     tags: ['Rooms'],
@@ -56,32 +60,31 @@ export type roomSpec = Tspec.DefineApiSpec<{
                 handler: typeof cinemaRoomController.get,
                 responses: { 200: { message: string } }
             },
-            post:{
+            post: {
                 summary: 'TODO: Write this',
                 handler: typeof cinemaRoomController.post,
                 responses: { 200: { message: string } }
             },
         },
-        '/rooms/{id}':{
-            get:{
+        '/rooms/{id}': {
+            get: {
                 summary: 'TODO: Write this',
                 handler: typeof cinemaRoomController.getOne,
                 responses: { 200: { message: string } }
             },
-            put:{
+            put: {
                 summary: 'TODO: Write this',
                 handler: typeof cinemaRoomController.put,
                 responses: { 200: { message: string } }
             },
-            delete:{
+            delete: {
                 summary: 'TODO: Write this',
                 handler: typeof cinemaRoomController.delete,
                 responses: { 200: { message: string } }
             }
         }
     }
-}>;
-
+}>
 
 export type movieSpec = Tspec.DefineApiSpec<{
     tags: ['Movies'],
@@ -92,22 +95,28 @@ export type movieSpec = Tspec.DefineApiSpec<{
                 handler: typeof movieController.get,
                 responses: { 200: { message: string } }
             },
-            post:{
+            post: {
                 summary: 'TODO: Write this',
                 handler: typeof movieController.post,
                 responses: { 200: { message: string } }
             },
         },
-        '/movies/{id}':{
-            get:{                summary: 'TODO: Write this',
+        '/movies/{id}': {
+            get: {
+                summary: 'TODO: Write this',
                 handler: typeof movieController.getOne,
-                responses: { 200: { message: string } }},
-            put:{                summary: 'TODO: Write this',
+                responses: { 200: { message: string } }
+            },
+            put: {
+                summary: 'TODO: Write this',
                 handler: typeof movieController.put,
-                responses: { 200: { message: string } }}
-            delete:{                summary: 'TODO: Write this',
+                responses: { 200: { message: string } }
+            }
+            delete: {
+                summary: 'TODO: Write this',
                 handler: typeof movieController.delete,
-                responses: { 200: { message: string } }}
+                responses: { 200: { message: string } }
+            }
         }
     }
-}>;
+}>
