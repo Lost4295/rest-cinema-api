@@ -1,14 +1,9 @@
-import express from 'express'
 import { AppDataSource } from './db/database'
-import { routesHandler } from './routes'
+import app from "./app";
 import {TspecDocsMiddleware} from "tspec";
 
-const app = async () => {
-  const app = express()
-  const port = 3001
-
-  app.use(express.json())
-  routesHandler(app)
+export const start = async () => {
+  const port = 3000
   // @ts-ignore
   app.use('/docs', await TspecDocsMiddleware());
 
@@ -27,4 +22,4 @@ const app = async () => {
   })
 }
 
-app()
+start()

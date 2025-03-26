@@ -1,6 +1,5 @@
-import {Column, Entity, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
+import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from "typeorm"
 import {Movie} from './Movie'
-import {JoinColumn} from "typeorm";
 import {CinemaRoom} from "./CinemaRoom";
 
 @Entity({name: "sessions"})

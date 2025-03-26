@@ -28,7 +28,7 @@ export class CinemaRoom {
     onMaintenance:boolean
 
     @OneToMany(() => CinemaSession, session => session.room)
-    sessions: CinemaSession[]
+    sessions: CinemaSession[] | undefined
 
     constructor(
         id: number,
@@ -48,7 +48,6 @@ export class CinemaRoom {
         this.capacity = capacity
         this.disabledAccess = disabledAccess
         this.onMaintenance = onMaintenance
-        this.sessions = []
     }
 }
 

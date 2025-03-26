@@ -13,7 +13,7 @@ export class Movie {
     duration: number
 
     @OneToMany(() => CinemaSession, session => session.movie)
-    sessions: CinemaSession[]
+    sessions: CinemaSession[] | undefined
 
     constructor(
         id: number,
@@ -23,7 +23,6 @@ export class Movie {
         this.id = id
         this.name = name
         this.duration = duration
-        this.sessions = []
     }
 }
 
