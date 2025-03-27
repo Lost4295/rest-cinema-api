@@ -1,12 +1,11 @@
-import {TestDataSource} from "../src/db/tests.database"
-import {beforeAll, beforeEach, describe, expect, it, jest} from "@jest/globals"
+import {beforeAll, beforeEach, describe, expect, it} from "@jest/globals"
 import {MovieController} from "../src/controllers/MovieController"
 import {getMockReq, getMockRes} from '@jest-mock/express'
-import {AppDataSource} from "../src/db/gateway/AppDataSource";
+import {AppDataSource} from "../src/db/database"
 
 beforeAll(async () => {
     try {
-        return new AppDataSource().initialize()
+        return AppDataSource.initialize()
     } catch (error) {
         if (error instanceof Error) {
             console.error(error.message)
@@ -15,7 +14,7 @@ beforeAll(async () => {
         }
     }
 })
-const {res, next, mockClear} = getMockRes()
+const {res, mockClear} = getMockRes()
 
 //TODO : test routes
 beforeEach(() => {
