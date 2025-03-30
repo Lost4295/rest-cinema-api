@@ -22,6 +22,7 @@
     "@eslint/js": "^9.23.0",
     "@jest/globals": "^29.7.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.1",
     "@types/express-prometheus-middleware": "^1.2.3",
     "@types/jsonwebtoken": "^9.0.9",
@@ -42,6 +43,7 @@
   "dependencies": {
     "@jest-mock/express": "^3.0.0",
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-prometheus-middleware": "^1.2.0",

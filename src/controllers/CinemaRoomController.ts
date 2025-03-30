@@ -1,7 +1,7 @@
 import {Request, Response} from "express"
 import {AppDataSource} from "../db/database"
 import {CinemaRoom} from "../db/models/CinemaRoom"
-import {cinemaRoomIdValidator, createCinemaRoomValidator, updateCinemaRoomValidator} from "../validators/rooms";
+import {cinemaRoomIdValidator, createCinemaRoomValidator, updateCinemaRoomValidator} from "../validators/rooms"
 
 
 export class CinemaRoomController {
@@ -16,7 +16,7 @@ export class CinemaRoomController {
         if (bodyValidator.error !== undefined) {
             console.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
-            return;
+            return
         }
         const body = bodyValidator.value
         const roomRepository = AppDataSource.getRepository(CinemaRoom)
@@ -29,7 +29,7 @@ export class CinemaRoomController {
         if (bodyValidator.error !== undefined) {
             console.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
-            return;
+            return
         }
         const body = bodyValidator.value
         const roomRepository = AppDataSource.getRepository(CinemaRoom)
@@ -50,7 +50,7 @@ export class CinemaRoomController {
             res.status(400).send(idValidator.error.details)
             return
         }
-        const value = idValidator.value.id;
+        const value = idValidator.value.id
         const repo = AppDataSource.getRepository(CinemaRoom)
         const room = await repo.findOneBy({
             id: value
@@ -72,7 +72,7 @@ export class CinemaRoomController {
             res.status(400).send(idValidator.error.details)
             return
         }
-        const value = idValidator.value.id;
+        const value = idValidator.value.id
         const roomRepository = AppDataSource.getRepository(CinemaRoom)
         const room = await roomRepository.findOneBy({id:value,onMaintenance:false})
         if (!room) {
