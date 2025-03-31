@@ -11,6 +11,9 @@ export interface Configuration {
     dbHost: string
     accessTokenSecret: string
     refreshTokenSecret: string
+    port: number
+    apiUrl: string
+
 }
 
 const initConfig = (): Configuration => {
@@ -23,9 +26,11 @@ const initConfig = (): Configuration => {
         DB_HOST,
         ACCESS_TOKEN_SECRET,
         REFRESH_TOKEN_SECRET,
+        PORT,
+        API_URL
     } = process.env
 
-    if (!DB_NAME || !DB_PASSWORD || !DB_SYNCHRONISE || !DB_USER || !DB_HOST || !ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET) {
+    if (!DB_NAME || !DB_PASSWORD || !DB_SYNCHRONISE || !DB_USER || !DB_HOST || !ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET || !PORT || !API_URL) {
         throw new Error("Missing environment variables")
     }
 
@@ -38,6 +43,8 @@ const initConfig = (): Configuration => {
         dbHost: DB_HOST,
         accessTokenSecret: ACCESS_TOKEN_SECRET,
         refreshTokenSecret: REFRESH_TOKEN_SECRET,
+        port: parseInt(PORT),
+        apiUrl: API_URL
     }
 }
 
