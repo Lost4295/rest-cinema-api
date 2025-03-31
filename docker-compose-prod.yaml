@@ -1,0 +1,30 @@
+services:
+  app:
+    image: my-app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - API_URL=${API_URL}
+      - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

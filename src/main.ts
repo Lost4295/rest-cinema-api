@@ -1,3 +1,4 @@
+import { config } from './config/config'
 import {AppDataSource} from './db/database'
 import app from "./app"
 import {TspecDocsMiddleware} from "tspec"
@@ -38,7 +39,8 @@ export const start = async () => {
     //   labels.contentType = req.headers['content-type'];
     // },
   }))
-  const port = 3000
+  const port = config.port
+
   // @ts-expect-error overload of tspec
   app.use('/docs', await TspecDocsMiddleware())
   routesHandler(app)
