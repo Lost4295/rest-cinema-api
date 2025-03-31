@@ -1,4 +1,10 @@
-node_modules
+.idea/
+.vscode/
+node_modules/
 dist
 .env
+database.sqlite
 coverage
+build/
+tmp/
+temp/

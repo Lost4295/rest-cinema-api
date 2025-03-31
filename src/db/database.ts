@@ -1,7 +1,8 @@
-import { DataSource } from "typeorm"
-import { config } from "../config/config"
+import {DataSource} from "typeorm"
+import {config} from "../config/config"
+import 'reflect-metadata'
 
-export const AppDataSource = new DataSource({
+export const AppDataSource =  new DataSource({
     type: "postgres",
     host: config.dbHost,
     port: 5432,
