@@ -8,4 +8,4 @@ coverage
 build/
 tmp/
 temp/
-log/
+logs/

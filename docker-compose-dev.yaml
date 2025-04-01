@@ -29,7 +29,7 @@ services:
       dockerfile: "./docker/dev/Dockerfile"
     volumes:
       - ./src:/app/src
-      - ./log:/app/logs
+      - ./logs:/app/logs
     restart: always
     ports:
       - "3000:3000"
@@ -72,7 +72,7 @@ services:
   promtail:
     image: grafana/promtail:latest
     volumes:
-      - ./log:/var/log
+      - ./logs:/var/log
       - ./loki/promtail-config.yaml:/etc/promtail/config.yaml
     command: -config.file=/etc/promtail/config.yml
 volumes:

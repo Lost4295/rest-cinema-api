@@ -1,6 +1,7 @@
 import express from 'express'
 import winston from 'winston'
 import DailyRotateFile from "winston-daily-rotate-file"
+import {routesHandler} from "./routes";
 
 const app = express()
 
@@ -36,5 +37,8 @@ export const logger = winston.createLogger({
         ]
 
 })
+
+
+routesHandler(app)
 
 export default app
