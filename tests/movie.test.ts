@@ -4,11 +4,12 @@ import request from "supertest"
 import {AppDataSource} from "../src/db/database"
 import {Movie} from "../src/db/models/Movie"
 import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../src/validators/movie"
+import {cleanDB} from "./utils"
 
 
-//TODO : test routes
 beforeAll(async () => {
     await AppDataSource.initialize()
+    await cleanDB()
 })
 
 beforeEach(async () => {
@@ -26,13 +27,13 @@ describe('movie controller :', () => {
         expect(res.body).toEqual([])
     })
     it('returns all existing films on GET:/movies when data is there', async () => {
-        const expectedMovies = await createRandomData()
+        const expectedMovies = await createRandomMovieData()
         const res = await request(app).get('/movies')
         expect(res.statusCode).toEqual(200)
         expect(res.body).toEqual(expectedMovies)
     })
     it('returns the selected movie on GET:/movies/{$id}', async () => {
-        const movies = await createRandomData()
+        const movies = await createRandomMovieData()
         const expectedMovie = movies[2]
         const res = await request(app).get('/movies/' + expectedMovie.id)
         expect(res.statusCode).toEqual(200)
@@ -78,7 +79,7 @@ describe('movie controller :', () => {
         expect(res.body).toEqual(expectedError!.error!.details)
     })
     it('returns 400 when data is invalid on PUT:/movies/{$id}', async () => {
-        const movies = await createRandomData()
+        const movies = await createRandomMovieData()
         const expectedMovie = movies[2]
         const expectedError = movieIdValidator.validate({id: expectedMovie.id})
         const expectedErrorBody = updateMovieValidator.validate({})
@@ -101,7 +102,7 @@ describe('movie controller :', () => {
         expect(res.body).toEqual({"message": "ressource not found"})
     })
     it('returns 200 on PUT:/movies/{$id} wih ok data', async () => {
-        const movies = await createRandomData()
+        const movies = await createRandomMovieData()
         const movie = movies[2]
         const movie1 = movies[1]
         const movie2 = movies[0]
@@ -170,7 +171,7 @@ describe('movie controller :', () => {
         expect(res.body).toEqual({"message": "ressource not found"})
     })
     it('returns 204 on DELETE:/movies/{$id} wih ok id', async () => {
-        const expectedMovies = await createRandomData()
+        const expectedMovies = await createRandomMovieData()
         const movie = expectedMovies[3]
         const expectedError = movieIdValidator.validate({id: movie.id})
         const res = await request(app).delete('/movies/' + movie.id)
@@ -184,11 +185,7 @@ describe('movie controller :', () => {
     })
 })
 
-async function cleanDB() {
-    await AppDataSource.createQueryBuilder().delete().from(Movie).execute()
-}
-
-async function createRandomData() {
+async function createRandomMovieData() {
     const mo = AppDataSource.getRepository(Movie)
     const movies = []
     for (let i = 1; i < 6; i++) {
