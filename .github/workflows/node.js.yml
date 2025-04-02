@@ -30,5 +30,4 @@ jobs:
     - run: cp .env.tests .env
     - run: npm install
     - run: npm ci
-    - run: npm run build --if-present
     - run: npm test
