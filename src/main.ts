@@ -1,9 +1,8 @@
-import { config } from './config/config'
+import {config} from './config/config'
 import {AppDataSource} from './db/database'
 import app from "./app"
 import {TspecDocsMiddleware} from "tspec"
 import expressPrometheusMiddleware from 'express-prometheus-middleware'
-import {routesHandler} from "./routes"
 
 export const start = async () => {
   app.use(expressPrometheusMiddleware({
@@ -43,13 +42,14 @@ export const start = async () => {
 
   // @ts-expect-error overload of tspec
   app.use('/docs', await TspecDocsMiddleware())
-  routesHandler(app)
   try {
     await AppDataSource.initialize()
   } catch (error) {
     if (error instanceof Error) {
+      //TODO : change with logger.error
       console.error(error.message)
     } else {
+      //TODO : change with logger.error
       console.error('An error occurred')
     }
   }

@@ -14,7 +14,7 @@ export class CinemaRoomController {
     async post(req: Request, res: Response) {
         const bodyValidator = createCinemaRoomValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            console.error(bodyValidator.error)
+            //TODO : change with logger.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
             return
         }
@@ -27,7 +27,7 @@ export class CinemaRoomController {
     async put(req: Request, res: Response) {
         const bodyValidator = updateCinemaRoomValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            console.error(bodyValidator.error)
+            //TODO : change with logger.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
             return
         }

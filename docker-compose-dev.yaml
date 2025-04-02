@@ -29,6 +29,7 @@ services:
       dockerfile: "./docker/dev/Dockerfile"
     volumes:
       - ./src:/app/src
+      - ./logs:/app/logs
     restart: always
     ports:
       - "3000:3000"
@@ -44,7 +45,6 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana-enterprise
-    restart: unless-stopped
     environment:
       - GF_PLUGINS_PREINSTALL=grafana-clock-panel
     ports:
@@ -61,6 +61,20 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
+  loki:
+    image: grafana/loki:latest
+    container_name: app_loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./logs:/var/log
+      - ./loki/promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yml
 volumes:
   postgres_esgi_data:
   prometheus:
