@@ -29,5 +29,5 @@ jobs:
     - run: sudo systemctl start postgresql.service
     - run: cp .env.tests .env
     - run: npm install
-    - run: npm ci
     - run: npm test
+    - run: npm ci
