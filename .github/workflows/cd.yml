@@ -36,4 +36,4 @@ jobs:
           port: 22
           script: |
             cd cinema-api
-            git pull
+            docker compose -f docker-compose-dev.yaml up -d --build
