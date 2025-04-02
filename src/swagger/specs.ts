@@ -4,11 +4,9 @@ import {MovieController} from "../controllers/MovieController"
 import {Tspec} from "tspec"
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cinemaSessionController = new CinemaSessionController()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const cinemaRoomController = new CinemaRoomController()
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const movieController = new MovieController()
 export type sessionSpec = Tspec.DefineApiSpec<{
     tags: ['Sessions'],

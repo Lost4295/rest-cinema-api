@@ -1,4 +1,5 @@
 import express from 'express'
+import cookieParser from 'cookie-parser'
 import winston from 'winston'
 import DailyRotateFile from "winston-daily-rotate-file"
 import {routesHandler} from "./routes";
@@ -6,6 +7,7 @@ import {routesHandler} from "./routes";
 const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
 
 const {combine, timestamp, json, printf} = winston.format
 const timestampFormat = 'MMM-DD-YYYY HH:mm:ss'
