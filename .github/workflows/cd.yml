@@ -23,7 +23,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.HOST }}
           REMOTE_USER: ${{ secrets.USERNAME }}
-          SOURCE: "."
+          SOURCE: "project"
           TARGET: "~/cinema-api"
       - name: Deploy using ssh
         uses: appleboy/ssh-action@master
@@ -34,4 +34,4 @@ jobs:
           port: 22
           script: |
             cd cinema-api
-            ls
+            git pull
