@@ -2,7 +2,7 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import winston from 'winston'
 import DailyRotateFile from "winston-daily-rotate-file"
-import {routesHandler} from "./routes";
+import {routesHandler} from "./routes"
 
 const app = express()
 
