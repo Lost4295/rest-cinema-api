@@ -4,7 +4,13 @@ import {CinemaSession} from "../src/db/models/CinemaSession"
 import {CinemaRoom} from "../src/db/models/CinemaRoom";
 
 export async function cleanDB() {
-    await AppDataSource.createQueryBuilder().delete().from(Movie).execute()
-    await AppDataSource.createQueryBuilder().delete().from(CinemaRoom).execute()
-    await AppDataSource.createQueryBuilder().delete().from(CinemaSession).execute()
+    if (!AppDataSource.isInitialized) {
+        await AppDataSource.initialize()
+    }
+    const movies = await AppDataSource.getRepository(Movie).find()
+    await AppDataSource.getRepository(Movie).remove(movies)
+    const rooms = await AppDataSource.getRepository(CinemaRoom).find()
+    await AppDataSource.getRepository(CinemaRoom).remove(rooms)
+    const sessions = await AppDataSource.getRepository(CinemaSession).find()
+    await AppDataSource.getRepository(CinemaSession).remove(sessions)
 }
