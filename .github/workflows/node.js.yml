@@ -47,6 +47,8 @@ jobs:
         REFRESH_TOKEN_SECRET: test
         PORT: 3000
         API_URL: https://api.example.com
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }} # get randomly assigned published port
 
     - run: cp .env.tests .env
     - run: npm install
