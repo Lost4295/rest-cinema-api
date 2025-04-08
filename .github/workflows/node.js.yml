@@ -11,13 +11,12 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
     services:
       postgres:
         image: postgres:10.8
@@ -25,32 +24,44 @@ jobs:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test
-          POSTGRES_PORT: 5432
         ports:
-          - 5432/tcp
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-      env:
-        ENV: test
-        DB_NAME: test
-        DB_PASSWORD: test
-        DB_USER: test
-        DB_SYNCHRONISE: true
-        DB_HOST: localhost
-        ACCESS_TOKEN_SECRET: test
-        REFRESH_TOKEN_SECRET: test
-        PORT: 3000
-        API_URL: https://api.example.com
-        POSTGRES_HOST: localhost
-        POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }} # get randomly assigned published port
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-    - run: cp .env.tests .env
-    - run: npm install
-    - run: npm test
-    - run: npm ci
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - run: cp .env.tests .env
+
+      - run: npm install
+
+      - name: Wait for Postgres
+        run: until pg_isready -h postgres -p 5432; do sleep 1; done
+
+      - run: npm test
+
+        env:
+          ENV: test
+          DB_NAME: test
+          DB_PASSWORD: test
+          DB_USER: test
+          DB_SYNCHRONISE: true
+          DB_HOST: postgres              # <--- c'est ça le plus important
+          ACCESS_TOKEN_SECRET: test
+          REFRESH_TOKEN_SECRET: test
+          PORT: 3000
+          API_URL: https://api.example.com
+          POSTGRES_HOST: postgres        # pareil ici
+          POSTGRES_PORT: 5432
+
+      - run: npm ci
