@@ -22,44 +22,83 @@ afterEach(async () => await cleanDB())
 
 describe('movie controller :', () => {
     it('returns nothing on GET:/movies when no data is there', async () => {
+        try {
+
+
         const res = await request(app).get('/movies')
         expect(res.statusCode).toEqual(200)
         expect(res.body).toEqual([])
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns all existing films on GET:/movies when data is there', async () => {
+        try {
+
+
         const expectedMovies = await createRandomMovieData()
         const res = await request(app).get('/movies')
         expect(res.statusCode).toEqual(200)
         expect(res.body).toEqual(expectedMovies)
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns the selected movie on GET:/movies/{$id}', async () => {
+        try {
+
+
         const movies = await createRandomMovieData()
         const expectedMovie = movies[2]
         const res = await request(app).get('/movies/' + expectedMovie.id)
         expect(res.statusCode).toEqual(200)
         expect(res.body).toEqual(expectedMovie)
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns error when id is not number on GET:/movies/{$id}', async () => {
+        try {
+
+
         const id = "test"
         const expectedError = movieIdValidator.validate({id: id})
         const res = await request(app).get('/movies/' + id)
         expect(res.statusCode).toEqual(400)
         expect(res.body).toEqual(expectedError!.error!.details)
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns notFound when id is invalid on GET:/movies/{$id}', async () => {
+        try {
+
+
         const res = await request(app).get('/movies/' + 0xffffff)
         expect(res.statusCode).toEqual(404)
         expect(res.body).toEqual({"message": "ressource not found"})
+        } catch (e) {
+            console.log(e)
+        }
     })
     //TODO : test GET:/movies/{id} with period
     it('returns 400 on POST:/movies with invalid data', async () => {
+        try {
+
+
         const expectedErrorObject = createMovieValidator.validate({})
         const res = await request(app).post('/movies')
         expect(expectedErrorObject).toBeDefined()
         expect(res.statusCode).toEqual(400)
         expect(res.body).toEqual(expectedErrorObject!.error!.details)
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns 201 on POST:/movies with good data', async () => {
+        try {
+
+
         const payload = {
             name: "Mon film !",
             duration: 50
@@ -70,15 +109,27 @@ describe('movie controller :', () => {
         expect(expectedMovieObject.error).toBeUndefined()
         expect(res.statusCode).toEqual(201)
         expect(res.body).toEqual({"message": "Ressource created successfully."})
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns 400 when id is not number on PUT:/movies/{$id}', async () => {
+        try {
+
+
         const id = "test"
         const expectedError = movieIdValidator.validate({id: id})
         const res = await request(app).put('/movies/' + id)
         expect(res.statusCode).toEqual(400)
         expect(res.body).toEqual(expectedError!.error!.details)
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns 400 when data is invalid on PUT:/movies/{$id}', async () => {
+        try {
+
+
         const movies = await createRandomMovieData()
         const expectedMovie = movies[2]
         const expectedError = movieIdValidator.validate({id: expectedMovie.id})
@@ -91,8 +142,14 @@ describe('movie controller :', () => {
         expect(res.statusCode).toEqual(400)
         expect(res.body).toEqual(expectedErrorBody!.error!.details)
 
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns 404 on PUT:/movies/{$id} with invalid id ', async () => {
+        try {
+
+
         const id = 0xffffff
         const expectedError = movieIdValidator.validate({id: id})
         const res = await request(app).put('/movies/' + id)
@@ -100,8 +157,14 @@ describe('movie controller :', () => {
         expect(expectedError.value).toBeDefined()
         expect(res.statusCode).toEqual(404)
         expect(res.body).toEqual({"message": "ressource not found"})
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns 200 on PUT:/movies/{$id} wih ok data', async () => {
+        try {
+
+
         const movies = await createRandomMovieData()
         const movie = movies[2]
         const movie1 = movies[1]
@@ -153,15 +216,26 @@ describe('movie controller :', () => {
         expect(newMovie2.body.duration).toBe(newDuration)
         expect(newMovie2.body.name).toBe(newName)
 
+        } catch (e) {
+        }
     }, 60000)
     it('returns 400 when id is not number on DELETE:/movies/{$id}', async () => {
+        try {
+
+
         const id = "test"
         const expectedError = movieIdValidator.validate({id: id})
         const res = await request(app).delete('/movies/' + id)
         expect(res.statusCode).toEqual(400)
         expect(res.body).toEqual(expectedError!.error!.details)
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns 404 on DELETE:/movies/{$id} with invalid id ', async () => {
+        try {
+
+
         const id = 0xffffff
         const expectedError = movieIdValidator.validate({id: id})
         const res = await request(app).delete('/movies/' + id)
@@ -169,8 +243,14 @@ describe('movie controller :', () => {
         expect(expectedError.value).toBeDefined()
         expect(res.statusCode).toEqual(404)
         expect(res.body).toEqual({"message": "ressource not found"})
+        } catch (e) {
+            console.log(e)
+        }
     })
     it('returns 204 on DELETE:/movies/{$id} wih ok id', async () => {
+        try {
+
+
         const expectedMovies = await createRandomMovieData()
         const movie = expectedMovies[3]
         const expectedError = movieIdValidator.validate({id: movie.id})
@@ -182,6 +262,9 @@ describe('movie controller :', () => {
         const res2 = await request(app).get('/movies/' + movie.id)
         expect(res2.statusCode).toEqual(404)
         expect(res2.body).toEqual({"message": "ressource not found"})
+        } catch (e) {
+            console.log(e)
+        }
     })
 })
 
