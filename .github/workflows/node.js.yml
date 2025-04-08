@@ -56,12 +56,12 @@ jobs:
           DB_PASSWORD: test
           DB_USER: test
           DB_SYNCHRONISE: true
-          DB_HOST: localhost              # <--- c'est ça le plus important
+          DB_HOST: localhost
           ACCESS_TOKEN_SECRET: test
           REFRESH_TOKEN_SECRET: test
           PORT: 3000
           API_URL: https://api.example.com
-          POSTGRES_HOST: localhost        # pareil ici
+          POSTGRES_HOST: localhost
           POSTGRES_PORT: 5432
 
       - run: npm ci
