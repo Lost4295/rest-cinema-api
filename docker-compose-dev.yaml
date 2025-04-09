@@ -52,6 +52,8 @@ services:
     volumes:
       - grafana_volume:/var/lib/grafana
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/structure.yaml:/etc/grafana/provisioning/dashboards/main.yaml
   prometheus:
     image: prom/prometheus
     volumes:
