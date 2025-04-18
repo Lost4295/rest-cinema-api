@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  roles        String
+  money        Float
+  tokens       Token[]
+  tickets      Ticket[]
+  transactions Transaction[]
+}
+
+model Ticket {
+  id        Int     @id @default(autoincrement())
+  sessionId Int
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  used      Boolean
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Movie {
+  id        Int       @id @default(autoincrement())
+  name      String
+  duration  Int
+  sessions  Session[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  movieId   Int
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime
+  tickets   Ticket[]
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Room {
+  id             Int       @id @default(autoincrement())
+  name           String
+  description    String
+  images         String[]
+  type           String
+  seats          Int
+  disabledAccess Boolean
+  onMaintenance  Boolean
+  sessions       Session[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Transaction {
+  id     Int      @id @default(autoincrement())
+  userId Int
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date   DateTime
+}

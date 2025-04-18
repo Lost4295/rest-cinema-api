@@ -6,7 +6,8 @@ import {
     createCinemaSessionValidator,
     updateCinemaSessionValidator
 } from "../src/validators/session"
-import { createUserWithRoleValidator, updatePasswordValidator, userIdValidator } from "../src/validators/user"
+import {createUserWithRoleValidator, updatePasswordValidator, userIdValidator} from "../src/validators/user"
+import {userRoles} from "../src/types/currentUser";
 
 describe("Movie validator : ", () => {
     test('createValidator is invalid when parameter is not provided', () => {
@@ -112,7 +113,7 @@ describe("Rooms validator : ", () => {
         const validator = createCinemaRoomValidator.validate(body)
         expect(validator.error).not.toBe(undefined)
         expect(validator.error?.message).toBe("\"name\" is required. \"description\" is required. \"images\" is required."
-            + " \"type\" is required. \"capacity\" is required. \"disabledAccess\" is required")
+            + " \"type\" is required. \"seats\" is required. \"disabledAccess\" is required")
     })
     test('createValidator is invalid when paramater is missing', () => {
         const body1 = {
@@ -121,7 +122,7 @@ describe("Rooms validator : ", () => {
         }
         const validator = createCinemaRoomValidator.validate(body1)
         expect(validator.error).not.toBe(undefined)
-        expect(validator.error?.message).toBe("\"images\" is required. \"type\" is required. \"capacity\" is required." +
+        expect(validator.error?.message).toBe("\"images\" is required. \"type\" is required. \"seats\" is required." +
             " \"disabledAccess\" is required")
     })
     test('createValidator is invalid when body is invalid ', () => {
@@ -130,22 +131,22 @@ describe("Rooms validator : ", () => {
             duration: 'hale',
             description: [7, 5, 3],
             images: {tats: "gfg"},
-            capacity: "bob"
+            seats: "bob"
         }
         const validator = createCinemaRoomValidator.validate(body)
         expect(validator.error).not.toBe(undefined)
         expect(validator.error?.message).toBe("\"name\" must be a string. \"description\" must be a string." +
-            " \"images\" must be an array. \"type\" is required. \"capacity\" must be a number." +
+            " \"images\" must be an array. \"type\" is required. \"seats\" must be a number." +
             " \"disabledAccess\" is required. \"duration\" is not allowed")
         const body2 = {
-            capacity: 5642,
+            seats: 5642,
             disabledAccess: () => console.log(),
             images: ["ytcd", NaN, "yen"]
         }
         const validator2 = createCinemaRoomValidator.validate(body2)
         expect(validator2.error).not.toBe(undefined)
         expect(validator2.error?.message).toBe("\"name\" is required. \"description\" is required." +
-            " \"images[1]\" must be a string. \"type\" is required. \"capacity\" must be less than or equal to 30." +
+            " \"images[1]\" must be a string. \"type\" is required. \"seats\" must be less than or equal to 30." +
             " \"disabledAccess\" must be a boolean")
     })
     test('createValidator is valid ', () => {
@@ -153,7 +154,7 @@ describe("Rooms validator : ", () => {
             name: "somename",
             description: 'somedesc',
             type: "Typede salle",
-            capacity: 25,
+            seats: 25,
             disabledAccess: true,
             images: ["string", 'values']
         }
@@ -198,7 +199,7 @@ describe("Rooms validator : ", () => {
         const validator = updateCinemaRoomValidator.validate(body)
         expect(validator.error).not.toBe(undefined)
         expect(validator.error?.message).toBe("\"id\" is required. \"value\" must contain at least one of " +
-            "[name, description, images, type, capacity, disabledAccess]")
+            "[name, description, images, type, seats, disabledAccess]")
     })
     test('update Validator is invalid when parameter are missing', () => {
         const body = {
@@ -207,7 +208,7 @@ describe("Rooms validator : ", () => {
         const validator = updateCinemaRoomValidator.validate(body)
         expect(validator.error).not.toBe(undefined)
         expect(validator.error?.message).toBe("\"value\" must contain at least one of " +
-            "[name, description, images, type, capacity, disabledAccess]")
+            "[name, description, images, type, seats, disabledAccess]")
     })
     test('update Validator is valid ', () => {
         const body = {
@@ -231,7 +232,8 @@ describe("Session validator", () => {
         const body = {}
         const validator = createCinemaSessionValidator.validate(body)
         expect(validator.error).not.toBe(undefined)
-        expect(validator.error?.message).toBe("\"startDate\" is required. \"endDate\" is required. \"movie\" is required")
+        expect(validator.error?.message).toBe("\"startDate\" is required. \"endDate\" is required. \"movie\" is" +
+            " required. \"room\" is required")
     })
     test('createValidator is invalid when paramater is missing', () => {
         const body1 = {
@@ -239,7 +241,7 @@ describe("Session validator", () => {
         }
         const validator = createCinemaSessionValidator.validate(body1)
         expect(validator.error).not.toBe(undefined)
-        expect(validator.error?.message).toBe("\"endDate\" is required. \"movie\" is required")
+        expect(validator.error?.message).toBe("\"endDate\" is required. \"movie\" is required. \"room\" is required")
     })
     //TODO : finish validator
     test.skip('createValidator is invalid when parameters are not required type', () => {
@@ -337,27 +339,27 @@ describe("User validators", () => {
         expect(validator.error).not.toBe(undefined)
         expect(validator.error?.message).toContain("\"email\" is required")
         expect(validator.error?.message).toContain("\"password\" is required")
-        expect(validator.error?.message).toContain("\"role\" is required")
+          expect(validator.error?.message).toContain("\"roles\" is required")
       })
   
       test("should be invalid when fields are of incorrect type", () => {
         const body = {
           email: 12345,
           password: true,
-          role: "invalidRole"
+            roles: "invalidRole"
         }
         const validator = createUserWithRoleValidator.validate(body)
         expect(validator.error).not.toBe(undefined)
         expect(validator.error?.message).toContain("\"email\" must be a string")
         expect(validator.error?.message).toContain("\"password\" must be a string")
-        expect(validator.error?.message).toContain("\"role\" must be one of")
+          expect(validator.error?.message).toContain("\"roles\" must be ")
       })
   
       test("should be valid when all fields are correct", () => {
         const body = {
           email: "user@example.com",
           password: "password123",
-          role: "classic"
+            roles: userRoles.CLASSIC
         }
         const validator = createUserWithRoleValidator.validate(body)
         expect(validator.error).toBe(undefined)

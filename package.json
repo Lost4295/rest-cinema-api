@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "_dev": "ts-node src/main.ts",
+    "prisma:generate": "prisma generate --schema=./src/db/schema.prisma",
+    "prisma:sync": "prisma db push --schema=./src/db/schema.prisma",
     "dev": "concurrently \"nodemon -e ts --exec ts-node src/main.ts\" \"npm run lint:watch\"",
     "start:dev": "nodemon -e ts --exec ts-node src/main.ts",
     "build": "tsc",
@@ -34,6 +36,7 @@
     "mysql": "^2.18.1",
     "nodemon": "^3.1.9",
     "onchange": "^7.1.0",
+    "prisma": "^6.6.0",
     "sqlite3": "^5.1.7",
     "supertest": "^7.1.0",
     "ts-jest": "^29.2.6",
@@ -43,9 +46,10 @@
   },
   "dependencies": {
     "@jest-mock/express": "^3.0.0",
+    "@prisma/client": "^6.6.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "express": "^4.21.2",
     "express-prometheus-middleware": "^1.2.0",
     "joi": "^17.13.3",

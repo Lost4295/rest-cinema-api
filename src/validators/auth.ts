@@ -1,5 +1,5 @@
 import Joi from "joi"
-import { User } from "../db/models/User"
+import {User} from "../db/client"
 
 export const authValidator = Joi.object<User>({
     email: Joi.string().email().required(),

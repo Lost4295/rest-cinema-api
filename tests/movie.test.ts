@@ -1,21 +1,15 @@
-import {afterEach, beforeAll, beforeEach, describe, expect, it} from "@jest/globals"
+import {afterEach, beforeEach, describe, expect, it} from "@jest/globals"
 import app from "../src/app"
 import request from "supertest"
-import {AppDataSource} from "../src/db/database"
-import {Movie} from "../src/db/models/Movie"
 import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../src/validators/movie"
 import {cleanDB} from "./utils"
+import {PrismaClient} from '../src/db/client'
 
 
-beforeAll(async () => {
-    await AppDataSource.initialize()
-    await cleanDB()
-})
+const db = new PrismaClient()
 
 beforeEach(async () => {
-    if (!AppDataSource.isInitialized) {
-        await AppDataSource.initialize()
-    }
+    await cleanDB()
 })
 afterEach(async () => await cleanDB())
 
@@ -30,6 +24,8 @@ describe('movie controller :', () => {
         const expectedMovies = await createRandomMovieData()
         const res = await request(app).get('/movies')
         expect(res.statusCode).toEqual(200)
+        expect(res.body).toBeDefined()
+        expect(res.body.length).toEqual(expectedMovies.length)
         expect(res.body).toEqual(expectedMovies)
     })
     it('returns the selected movie on GET:/movies/{$id}', async () => {
@@ -186,11 +182,17 @@ describe('movie controller :', () => {
 })
 
 async function createRandomMovieData() {
-    const mo = AppDataSource.getRepository(Movie)
     const movies = []
     for (let i = 1; i < 6; i++) {
-        movies.push(new Movie(i, `Le film, partie ${i}`, 64 + i * 3))
+        movies.push({
+            id: i,
+            name: `Le film, partie ${i}`,
+            duration: 64 + i * 3,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        })
     }
-    await mo.save(movies)
+    console.log(movies)
+    await db.movie.createMany({data: movies})
     return movies
 }

@@ -1,10 +1,9 @@
-import {AppDataSource} from "../src/db/database"
-import {Movie} from "../src/db/models/Movie"
-import {CinemaSession} from "../src/db/models/CinemaSession"
-import {CinemaRoom} from "../src/db/models/CinemaRoom";
+import {PrismaClient} from '../src/db/client'
+
+const db = new PrismaClient()
 
 export async function cleanDB() {
-    await AppDataSource.createQueryBuilder().delete().from(Movie).execute()
-    await AppDataSource.createQueryBuilder().delete().from(CinemaRoom).execute()
-    await AppDataSource.createQueryBuilder().delete().from(CinemaSession).execute()
+    await db.movie.deleteMany({where: {}})
+    await db.room.deleteMany({where: {}})
+    await db.session.deleteMany({where: {}})
 }

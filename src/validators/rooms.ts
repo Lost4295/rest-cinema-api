@@ -1,12 +1,12 @@
 import Joi from "joi"
-import { CinemaRoomBody} from "../db/models/CinemaRoom"
+import {CinemaRoomBody} from "../types/CinemaRoom"
 
 export const createCinemaRoomValidator = Joi.object<CinemaRoomBody>({
     name: Joi.string().required(),
     description: Joi.string().required(),
     images: Joi.array().items(Joi.string()).required(),
     type: Joi.string().required(),
-    capacity: Joi.number().required().min(15).max(30),
+    seats: Joi.number().required().min(15).max(30),
     disabledAccess: Joi.boolean().required(),
 }).options({abortEarly:false})
 
@@ -19,6 +19,6 @@ export const updateCinemaRoomValidator = Joi.object<CinemaRoomBody>({
     description: Joi.string().optional(),
     images: Joi.array().items(Joi.string()).optional(),
     type: Joi.string().optional(),
-    capacity: Joi.number().optional().min(15).max(30),
+    seats: Joi.number().optional().min(15).max(30),
     disabledAccess: Joi.boolean().optional(),
-}).options({abortEarly:false}).or("name", "description", "images", "type", "capacity", "disabledAccess")
+}).options({abortEarly: false}).or("name", "description", "images", "type", "seats", "disabledAccess")

@@ -1,10 +1,11 @@
 import Joi from "joi"
-import { User, userRoles } from "../db/models/User"
+import {User} from "../db/client"
+import {userRoles} from "../types/currentUser";
 
 export const createUserWithRoleValidator = Joi.object<User>({
     email: Joi.string().email().required(),
     password: Joi.string().required().min(6).max(20),
-    role: Joi.string().valid(userRoles).required()
+    roles: Joi.string().valid(userRoles).required()
 }).options({abortEarly: false})
 
 export const userIdValidator = Joi.object({

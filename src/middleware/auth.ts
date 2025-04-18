@@ -1,7 +1,6 @@
-import { NextFunction, Request, Response } from "express"
-import { verify } from "jsonwebtoken"
-import { userRoles } from "../db/models/User"
-import { CurrentUser } from "../types/currentUser"
+import {NextFunction, Request, Response} from "express"
+import {verify} from "jsonwebtoken"
+import {CurrentUser, userRoles} from "../types/currentUser"
 
 export const classicAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
