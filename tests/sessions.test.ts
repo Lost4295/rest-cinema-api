@@ -37,7 +37,6 @@ async function createRandomSessions() {
             id: i,
             startDate: new Date(new Date().getTime() - i * 1000 * 60 * 60),
             endDate: new Date(new Date().getTime() - i * 1000 * 60 * 60 + 1000 * 60 * 60),
-            tickets: 0,
             movieId: 1,
             roomId: 1,
             createdAt: new Date(),
@@ -57,7 +56,7 @@ async function createRandomSessions() {
         data: {
             id: 1,
             name: 'test',
-            seats: 100,
+            seats: 25,
             createdAt: new Date(),
             updatedAt: new Date(),
             description: "description",

@@ -18,5 +18,4 @@ export const updateCinemaSessionValidator = Joi.object<CinemaSessionBodyWithRela
     id: Joi.number().required(),
     startDate: Joi.date().optional(),
     endDate: Joi.date().optional(),
-    tickets: Joi.number().optional(),
 }).options({abortEarly: false}).or("startDate", "endDate", "movie")

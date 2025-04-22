@@ -15,19 +15,34 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   roles        String
-  money        Float
+  money        Float         @default(0)
   tokens       Token[]
   tickets      Ticket[]
+  superTickets SuperTicket[]
   transactions Transaction[]
 }
 
 model Ticket {
-  id        Int     @id @default(autoincrement())
-  sessionId Int
-  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-  userId    Int
-  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  used      Boolean
+  id            Int          @id @default(autoincrement())
+  sessionId     Int
+  session       Session      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId        Int
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  used          Boolean      @default(false)
+  remainingUses Int          @default(1)
+  isSuperTicket Boolean      @default(false)
+  transaction   Transaction?
+}
+
+model SuperTicket {
+  id            Int          @id @default(autoincrement())
+  session       Session[]
+  userId        Int
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  used          Boolean      @default(false)
+  remainingUses Int          @default(10)
+  isSuperTicket Boolean      @default(true)
+  transaction   Transaction?
 }
 
 model Token {
@@ -49,16 +64,17 @@ model Movie {
 }
 
 model Session {
-  id        Int      @id @default(autoincrement())
-  movieId   Int
-  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
-  startDate DateTime
-  endDate   DateTime
-  tickets   Ticket[]
-  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  roomId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int           @id @default(autoincrement())
+  movieId      Int
+  movie        Movie         @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  startDate    DateTime
+  endDate      DateTime
+  tickets      Ticket[]
+  superTickets SuperTicket[]
+  room         Room          @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId       Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Room {
@@ -69,15 +85,20 @@ model Room {
   type           String
   seats          Int
   disabledAccess Boolean
-  onMaintenance  Boolean
+  onMaintenance  Boolean   @default(false)
   sessions       Session[]
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
 
 model Transaction {
-  id     Int      @id @default(autoincrement())
-  userId Int
-  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date   DateTime
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          DateTime
+  price         Float
+  ticket        Ticket      @relation(fields: [ticketId], references: [id])
+  ticketId      Int         @unique
+  superTicket   SuperTicket @relation(fields: [superTicketId], references: [id])
+  superTicketId Int         @unique
 }

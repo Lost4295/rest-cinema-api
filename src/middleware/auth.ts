@@ -27,7 +27,9 @@ export const classicAuthMiddleware = async (req: Request, res: Response, next: N
 
       const allowedRoles = [
         userRoles.CLASSIC,
-        userRoles.EMPLOYEE,
+        userRoles.CONFISERY,
+        userRoles.ACCUEIL,
+        userRoles.PROJECTIONIST,
         userRoles.ADMIN,
         userRoles.SUPER_ADMIN,
       ]
@@ -85,7 +87,9 @@ export const employeeAuthMiddleware = async (req: Request, res: Response, next: 
       const currentUser = user as CurrentUser
       
       const allowedRoles: string[] = [
-        userRoles.EMPLOYEE,
+        userRoles.CONFISERY,
+        userRoles.ACCUEIL,
+        userRoles.PROJECTIONIST,
         userRoles.ADMIN,
         userRoles.SUPER_ADMIN,
       ]

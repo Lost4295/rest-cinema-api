@@ -1,6 +1,6 @@
 import Joi from "joi"
 import {User} from "../db/client"
-import {userRoles} from "../types/currentUser";
+import {userRoles} from "../types/currentUser"
 
 export const createUserWithRoleValidator = Joi.object<User>({
     email: Joi.string().email().required(),

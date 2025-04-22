@@ -4,6 +4,7 @@ import request from "supertest"
 import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../src/validators/movie"
 import {cleanDB} from "./utils"
 import {PrismaClient} from '../src/db/client'
+import {ticketCreateValidator} from "../src/validators/ticket";
 
 
 const db = new PrismaClient()
@@ -14,54 +15,33 @@ beforeEach(async () => {
 afterEach(async () => await cleanDB())
 
 
-describe('movie controller :', () => {
-    it('returns nothing on GET:/movies when no data is there', async () => {
-        const res = await request(app).get('/movies')
+describe('ticket controller :', () => {
+    it('returns nothing on GET:/tickets when no data is there', async () => {
+        const res = await request(app).get('/tickets')
         expect(res.statusCode).toEqual(200)
         expect(res.body).toEqual([])
     })
-    it('returns all existing films on GET:/movies when data is there', async () => {
-        const expectedMovies = await createRandomMovieData()
-        const res = await request(app).get('/movies')
+    it('returns all existing films on GET:/tickets when data is there', async () => {
+        const expectedTickets = await createRandomMovieData()
+        const res = await request(app).get('/tickets')
         expect(res.statusCode).toEqual(200)
         expect(res.body).toBeDefined()
-        expect(res.body.length).toEqual(expectedMovies.length)
-        expect(res.body).toEqual(expectedMovies)
+        expect(res.body.length).toEqual(expectedTickets.length)
+        expect(res.body).toEqual(expectedTickets)
     })
-    it('returns the selected movie on GET:/movies/{$id}', async () => {
-        const movies = await createRandomMovieData()
-        const expectedMovie = movies[2]
-        const res = await request(app).get('/movies/' + expectedMovie.id)
-        expect(res.statusCode).toEqual(200)
-        expect(res.body).toEqual(expectedMovie)
-    })
-    it('returns error when id is not number on GET:/movies/{$id}', async () => {
-        const id = "test"
-        const expectedError = movieIdValidator.validate({id: id})
-        const res = await request(app).get('/movies/' + id)
-        expect(res.statusCode).toEqual(400)
-        expect(res.body).toEqual(expectedError!.error!.details)
-    })
-    it('returns notFound when id is invalid on GET:/movies/{$id}', async () => {
-        const res = await request(app).get('/movies/' + 0xffffff)
-        expect(res.statusCode).toEqual(404)
-        expect(res.body).toEqual({"message": "ressource not found"})
-    })
-    //TODO : test GET:/movies/{id} with period
-    it('returns 400 on POST:/movies with invalid data', async () => {
+    it('returns 400 on POST:/tickets with invalid data', async () => {
         const expectedErrorObject = createMovieValidator.validate({})
-        const res = await request(app).post('/movies')
+        const res = await request(app).post('/tickets')
         expect(expectedErrorObject).toBeDefined()
         expect(res.statusCode).toEqual(400)
         expect(res.body).toEqual(expectedErrorObject!.error!.details)
     })
-    it('returns 201 on POST:/movies with good data', async () => {
+    it('returns 201 on POST:/tickets with good data', async () => {
         const payload = {
-            name: "Mon film !",
-            duration: 50
+            superTicket: true
         }
-        const expectedMovieObject = createMovieValidator.validate(payload)
-        const res = await request(app).post('/movies').send(payload)
+        const expectedMovieObject = ticketCreateValidator.validate(payload)
+        const res = await request(app).post('/tickets').send(payload)
         expect(expectedMovieObject.value).toBeDefined()
         expect(expectedMovieObject.error).toBeUndefined()
         expect(res.statusCode).toEqual(201)
@@ -192,7 +172,7 @@ async function createRandomMovieData() {
             updatedAt: new Date().toISOString()
         })
     }
-
+    console.log(movies)
     await db.movie.createMany({data: movies})
     return movies
 }

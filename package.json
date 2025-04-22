@@ -7,6 +7,7 @@
     "_dev": "ts-node src/main.ts",
     "prisma:generate": "prisma generate --schema=./src/db/schema.prisma",
     "prisma:sync": "prisma db push --schema=./src/db/schema.prisma",
+    "prisma:seed": "ts-node src/db/seed.ts",
     "dev": "concurrently \"nodemon -e ts --exec ts-node src/main.ts\" \"npm run lint:watch\"",
     "start:dev": "nodemon -e ts --exec ts-node src/main.ts",
     "build": "tsc",

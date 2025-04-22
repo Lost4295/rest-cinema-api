@@ -22,3 +22,4 @@ export const updateCinemaRoomValidator = Joi.object<CinemaRoomBody>({
     seats: Joi.number().optional().min(15).max(30),
     disabledAccess: Joi.boolean().optional(),
 }).options({abortEarly: false}).or("name", "description", "images", "type", "seats", "disabledAccess")
+

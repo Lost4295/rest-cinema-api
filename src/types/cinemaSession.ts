@@ -13,7 +13,6 @@ export interface CinemaSessionBodyWithRelations {
     id: number,
     startDate: Date,
     endDate: Date,
-    tickets?: number,
     movie: undefined,
     room: undefined,
 }

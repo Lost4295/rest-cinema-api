@@ -5,6 +5,8 @@ import bcrypt from "bcrypt"
 import {config} from "../../config/config"
 import {sign} from "jsonwebtoken"
 import {CurrentUser, UserRoles, userRoles} from "../../types/currentUser"
+import {logger} from "../../app"
+import formatHTTPLoggerResponse from "../../loggerformat"
 
 const accessTokenExpiration = config.env === "production" ? '30s' : '1d'
 const refreshTokenExpiration = '7d'
@@ -19,17 +21,20 @@ export class AuthController {
         if (bodyValidator.error !== undefined) {
             console.error(bodyValidator.error)
             res.status(400).json(bodyValidator.error.details)
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request fail : validation error'}))
             return
         }
         const body = bodyValidator.value
         const user = await db.user.findUnique({where: {email: body.email}})
         if (!user) {
             res.status(404).json({message: "User not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request fail : user not found'}))
             return
         }
         const isPasswordCorrect = await bcrypt.compare(body.password, user.password)
         if (!isPasswordCorrect) {
             res.status(401).json({message: "Invalid password"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request fail : invalid password'}))
             return
         }
         const currentUser: CurrentUser = {
@@ -66,6 +71,7 @@ export class AuthController {
 
 
         res.status(200).json({accessToken})
+        logger.info(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request : success'}))
 
     }
 
@@ -74,12 +80,14 @@ export class AuthController {
         if (bodyValidator.error !== undefined) {
             console.error(bodyValidator.error)
             res.status(400).json(bodyValidator.error.details)
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.register request fail : validation error'}))
             return
         }
         const body = bodyValidator.value
         const user = await db.user.findUnique({where: {email: body.email}})
         if (user) {
             res.status(400).json({message: "User already exists"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.register request fail : user already exists'}))
             return
         }
         const hashedPassword = await bcrypt.hash(body.password, 10)
@@ -91,18 +99,21 @@ export class AuthController {
         await db.user.create({data: newUser})
 
         res.status(201).json({message: "User created"})
+        logger.info(formatHTTPLoggerResponse(req, res, {message: 'AuthController.register request : success'}))
     }
 
     async logout(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken
         if (!refreshToken) {
             res.status(401).json({message: "Unauthorized"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.logout request fail : unauthorized'}))
             return
         }
         const token = await db.token.findUnique({where: {token: refreshToken}})
 
         if (!token) {
             res.status(403).json({message: "Forbidden"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.logout request fail : forbidden'}))
             return
         }
 
@@ -114,12 +125,14 @@ export class AuthController {
         })
 
         res.status(200).json({message: "Logged out"})
+        logger.info(formatHTTPLoggerResponse(req, res, {message: 'AuthController.logout request : success'}))
     }
 
     async refreshToken(req: Request, res: Response) {
         const refreshToken = req.cookies.refreshToken
         if (!refreshToken) {
             res.status(401).json({message: "Unauthorized"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.refreshToken request fail : unauthorized'}))
             return
         }
         const token = await db.token.findUnique({
@@ -129,6 +142,7 @@ export class AuthController {
 
         if (!token || !token.user) {
             res.status(403).json({message: "Forbidden"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.refreshToken request fail : forbidden'}))
             return
         }
 
@@ -136,6 +150,7 @@ export class AuthController {
 
         if (!user) {
             res.status(404).json({message: "User not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.refreshToken request fail : user not found'}))
             return
         }
 
@@ -144,5 +159,6 @@ export class AuthController {
         })
 
         res.status(200).json({accessToken})
+        logger.info(formatHTTPLoggerResponse(req, res, {message: 'AuthController.refreshToken request : success'}))
     }
 }

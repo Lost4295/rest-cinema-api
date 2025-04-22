@@ -1,5 +1,6 @@
-import { Router } from "express"
-import { CinemaRoomController } from "../controllers/CinemaRoomController"
+import {Router} from "express"
+import {CinemaRoomController} from "../controllers/CinemaRoomController"
+import {isOpen} from "../middleware/open"
 
 export const cinemaRoomRoutes = Router()
 
@@ -9,4 +10,4 @@ cinemaRoomRoutes.get("/", cinemaRoomController.get)
 cinemaRoomRoutes.post("/", cinemaRoomController.post)
 cinemaRoomRoutes.put("/", cinemaRoomController.put)
 cinemaRoomRoutes.delete("/", cinemaRoomController.delete)
-cinemaRoomRoutes.get("/:id", cinemaRoomController.getOne)
+cinemaRoomRoutes.get("/:id", isOpen, cinemaRoomController.getOne)

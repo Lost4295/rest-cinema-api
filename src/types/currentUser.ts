@@ -7,7 +7,9 @@ export interface CurrentUser {
 
 export const userRoles = {
   CLASSIC: "classic",
-  EMPLOYEE: "employee",
+  CONFISERY: "confiseur",
+  ACCUEIL: "accueil",
+  PROJECTIONIST: "projectionist",
   ADMIN: "admin",
   SUPER_ADMIN: "super_admin"
 } as const
