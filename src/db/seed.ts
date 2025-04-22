@@ -5,17 +5,19 @@ const prisma = new PrismaClient()
 
 async function main() {
     //create 5 movies
+    console.log("Adding movies")
     for (let i = 1; i < 6; i++) {
         await prisma.movie.create({
             data: {
                 name: `movie${i}`,
-                duration: 120,
+                duration: (Math.random() * 61) + 60,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             }
         })
     }
     //create 10 rooms
+    console.log("Adding rooms")
     for (let i = 1; i <= 10; i++) {
         await prisma.room.create({
             data: {
@@ -33,6 +35,7 @@ async function main() {
     }
 
     //create 10 sessions
+    console.log("Adding sessions")
     for (let i = 1; i <= 10; i++) {
         await prisma.session.create({
             data: {
@@ -47,6 +50,7 @@ async function main() {
     }
 
     //create 8 users
+    console.log("Adding users")
     for (let i = 1; i <= 8; i++) {
         await prisma.user.create({
             data: {
@@ -59,6 +63,7 @@ async function main() {
             }
         })
     }
+    console.log("Adding tickets")
     // create tickets for them randomly
     for (let i = 6; i <= 8; i++) {
         const tickets = Math.floor(Math.random() * 5) + 1
@@ -118,6 +123,7 @@ async function main() {
             }
         }
     }
+    console.log("All done !")
 }
 
 
