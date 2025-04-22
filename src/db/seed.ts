@@ -27,7 +27,7 @@ async function main() {
                 type: i % 2 == 0 ? (i % 3 == 0 ? "4D et 3D" : "3D") : "2D",
                 seats: Math.floor(Math.random() * 16) + 15,
                 disabledAccess: i % 3 == 0,
-                onMaintenance: false,
+                onMaintenance: i == 10,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             }
@@ -37,11 +37,17 @@ async function main() {
     //create 10 sessions
     console.log("Adding sessions")
     for (let i = 1; i <= 10; i++) {
+        const date = new Date().getTime() + (i % 3 == 0 ? i + 5 : -i - 5) * 1000 * 60 * 60
+        const id = Math.floor(Math.random() * 5) + 1
+        const m = await prisma.movie.findUniqueOrThrow({
+            where: {id: id}
+        })
+        const endDate = new Date(date + (m.duration * 60 * 1000) + (1000 * 30 * 60 * 60))
         await prisma.session.create({
             data: {
-                startDate: new Date(new Date().getTime() + (i % 3 == 0 ? i : -i) * 1000 * 60 * 60),
-                endDate: new Date(new Date().getTime() + (i % 3 == 0 ? i : -i) * 1000 * 60 * 60 + 1000 * 60 * 60),
-                movieId: Math.floor(Math.random() * 5) + 1,
+                startDate: new Date(date),
+                endDate: endDate,
+                movieId: id,
                 roomId: Math.floor(Math.random() * 10) + 1,
                 createdAt: new Date(),
                 updatedAt: new Date(),

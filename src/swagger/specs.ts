@@ -1,13 +1,19 @@
 import {CinemaSessionController} from "../controllers/CinemaSessionController"
 import {CinemaRoomController} from "../controllers/CinemaRoomController"
 import {MovieController} from "../controllers/MovieController"
+import {AuthController} from "../controllers/auth/AuthController"
 import {Tspec} from "tspec"
+import {UserController} from "../controllers/UserController"
+import {TicketController} from "../controllers/TicketController"
 
 
 const cinemaSessionController = new CinemaSessionController()
 const cinemaRoomController = new CinemaRoomController()
-
+const authController = new AuthController()
 const movieController = new MovieController()
+const userController = new UserController()
+const ticketController = new TicketController()
+
 export type sessionSpec = Tspec.DefineApiSpec<{
     tags: ['Sessions'],
     paths: {
@@ -113,6 +119,114 @@ export type movieSpec = Tspec.DefineApiSpec<{
             delete: {
                 summary: 'TODO: Write this',
                 handler: typeof movieController.delete,
+                responses: { 200: { message: string } }
+            }
+        }
+    }
+}>
+
+export type baseSpec = Tspec.DefineApiSpec<{
+    tags: ['Authentication'],
+    paths: {
+        '/auth/login': {
+            post: {
+                summary: 'TODO: Write this'
+                handler: typeof authController.login,
+                responses: {}
+            }
+        },
+        '/auth/register': {
+            post: {
+                summary: 'TODO: Write this'
+                handler: typeof authController.register,
+                responses: {}
+            }
+        },
+        '/auth/logout': {
+            get: {
+                summary: 'TODO: Write this'
+                handler: typeof authController.logout,
+                responses: {}
+            }
+        },
+        '/auth/refresh-token': {
+            get: {
+                summary: 'TODO: Write this'
+                handler: typeof authController.refreshToken,
+                responses: {}
+            }
+        },
+    }
+}>
+
+export type userSpec = Tspec.DefineApiSpec<{
+    tags: ['Users'],
+    paths: {
+        '/users': {
+            get: {
+                summary: 'TODO: Write this',
+                handler: typeof userController.getAll,
+                responses: {}
+            },
+            post: {
+                summary: 'TODO: Write this',
+                handler: typeof userController.createUserWithRole,
+                responses: {}
+            }
+        },
+        '/users/profile': {
+            get: {
+                summary: 'TODO: Write this',
+                handler: typeof userController.getProfile,
+                responses: {}
+            }
+        },
+        '/users/password': {
+            put: {
+                summary: 'TODO: Write this',
+                handler: typeof userController.updatePassword,
+                responses: {}
+            }
+        },
+        '/users/{id}': {
+            delete: {
+                summary: 'TODO: Write this',
+                handler: typeof userController.deleteUser,
+                responses: {}
+            }
+        },
+    }
+}>
+
+export type ticketSpec = Tspec.DefineApiSpec<{
+    tags: ["Tickets"],
+    paths: {
+        '/tickets': {
+            get: {
+                summary: 'Get all tickets.',
+                handler: typeof ticketController.get,
+                responses: { 200: { message: string } }
+            },
+            post: {
+                summary: 'TODO: Write this',
+                handler: typeof ticketController.buyTicket,
+                responses: { 200: { message: string } }
+            },
+        },
+        '/tickets/{id}': {
+            get: {
+                summary: 'TODO: Write this',
+                handler: typeof ticketController.useTicket,
+                responses: { 200: { message: string } }
+            },
+            put: {
+                summary: 'TODO: Write this',
+                handler: typeof ticketController.modifyTicket,
+                responses: { 200: { message: string } }
+            },
+            delete: {
+                summary: 'TODO: Write this',
+                handler: typeof ticketController.delete,
                 responses: { 200: { message: string } }
             }
         }
