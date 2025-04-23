@@ -1,7 +1,8 @@
 import {NextFunction, Request, Response} from "express"
-import {logger} from "../app"
 import formatHTTPLoggerResponse from "../loggerformat"
 import {PrismaClient} from "../db/client"
+import {userRoles} from "../types/currentUser"
+import {logger} from "../format"
 
 export const isOpen = async (req: Request, res: Response, next: NextFunction) => {
     const time = new Date().getHours()
@@ -14,13 +15,25 @@ export const isOpen = async (req: Request, res: Response, next: NextFunction) =>
     }
 }
 
+
 export const canOpen = async (req: Request, res: Response, next: NextFunction) => {
     const db = new PrismaClient()
-    //TODO : check if the cinema is open
     try {
-        const confiserie = ""
-        const accueil = ""
-        const projectionniste = ""
+        const confiserie = await db.user.findFirst({
+            where: {
+                roles: userRoles.CONFISERY
+            }
+        })
+        const accueil = await db.user.findFirst({
+            where: {
+                roles: userRoles.ACCUEIL
+            }
+        })
+        const projectionniste = await db.user.findFirst({
+            where: {
+                roles: userRoles.PROJECTIONIST
+            }
+        })
         if (!confiserie || !accueil || !projectionniste) {
             res.status(403).json({message: "Forbidden : cinema is closed"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: "Forbidden : cinema is closed"}))

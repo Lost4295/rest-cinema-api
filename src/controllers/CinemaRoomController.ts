@@ -1,9 +1,9 @@
 import {Request, Response} from "express"
 import {PrismaClient} from "../db/client"
 import {cinemaRoomIdValidator, createCinemaRoomValidator, updateCinemaRoomValidator} from "../validators/rooms"
-import {logger} from "../app"
 import formatHTTPLoggerResponse from "../loggerformat"
 import {periodValidator} from "../validators/period"
+import {logger} from "../format"
 
 const db = new PrismaClient()
 
@@ -89,7 +89,7 @@ export class CinemaRoomController {
         }
 
 
-        const idValidator = cinemaRoomIdValidator.validate(req.query)
+        const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
 
             res.status(400).send(idValidator.error.details)
@@ -118,7 +118,67 @@ export class CinemaRoomController {
         if (perValidator.value !== undefined) {
             console.log(perValidator.value)
         }
-        res.status(200).send(room.sessions)
+        res.status(200).send({"sessions": room.sessions})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request : success'}))
+    }
+
+    async setMaintenance(req: Request, res: Response) {
+        const idValidator = cinemaRoomIdValidator.validate(req.params)
+        if (idValidator.error) {
+            res.status(400).send(idValidator.error.details)
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.setMaintenance request fail : validation error'}))
+            return
+        }
+        const value = idValidator.value.id
+        const room = await db.room.findUnique({
+            where: {
+                id: value
+            }
+        })
+        if (!room) {
+            res.status(404).send({"message": "ressource not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.setMaintenance request fail : ressource not found'}))
+            return
+        }
+        await db.room.update({
+            data: {
+                onMaintenance: true
+            },
+            where: {
+                id: room.id
+            }
+        })
+        res.status(204).send({"message": "room on maintenance"})
+        logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.setMaintenance request success'}))
+    }
+
+    async removeMaintenance(req: Request, res: Response) {
+        const idValidator = cinemaRoomIdValidator.validate(req.params)
+        if (idValidator.error) {
+            res.status(400).send(idValidator.error.details)
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.removeMaintenance request fail : validation error'}))
+            return
+        }
+        const value = idValidator.value.id
+        const room = await db.room.findUnique({
+            where: {
+                id: value
+            }
+        })
+        if (!room) {
+            res.status(404).send({"message": "ressource not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.removeMaintenance request fail : ressource not found'}))
+            return
+        }
+        await db.room.update({
+            data: {
+                onMaintenance: false
+            },
+            where: {
+                id: room.id
+            }
+        })
+        res.status(204).send({"message": "room no longer on maintenance"})
+        logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.removeMaintenance request success'}))
     }
 }

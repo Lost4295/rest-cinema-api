@@ -1,7 +1,10 @@
 import {PrismaClient} from './client'
 import {userRoles} from '../types/currentUser'
+import {config} from "../config/config"
 
 const prisma = new PrismaClient()
+
+const TICKET_PRICE = config.ticketPrice
 
 async function main() {
     //create 5 movies
@@ -75,41 +78,35 @@ async function main() {
         const tickets = Math.floor(Math.random() * 5) + 1
         for (let j = 0; j < tickets; j++) {
             const id = Math.floor(Math.random() * 10) + 1
-            let t
-            if (Math.random() * 2 > 1) {
-                t = await prisma.ticket.create({
-                    data: {
-                        userId: i,
-                        sessionId: id,
-                    }
-                })
-                const session = await prisma.session.findUniqueOrThrow({
-                    where: {
-                        id: id
-                    }
-                })
-                if (session.endDate < new Date()) {
-                    await prisma.ticket.update({
-                        where: {
-                            id: t.id
-                        },
-                        data: {
-                            used: true,
-                            remainingUses: 0
-                        }
-                    })
+            const user = await prisma.user.findUniqueOrThrow({
+                where: {
+                    id: i
                 }
-            } else {
-                t = await prisma.superTicket.create({
+            })
+            if (Math.random() * 2 > 1 && user.money > TICKET_PRICE * 4) {
+                const tr = await prisma.transaction.create({
                     data: {
-                        userId: i,
-                        session: {
+                        user: {
                             connect: {
-                                id: id
-                            },
+                                id: i
+                            }
+                        },
+                        price: TICKET_PRICE * 4,
+                        superTicket: {
+                            create: {
+                                userId: i,
+                                session: {
+                                    connect: {
+                                        id: id
+                                    },
+                                },
+                            }
                         }
-                    }
+                    }, include: {superTicket: true}
                 })
+                if (!tr.superTicket) {
+                    throw new Error()
+                }
                 const session = await prisma.session.findUniqueOrThrow({
                     where: {
                         id: id
@@ -118,13 +115,54 @@ async function main() {
                 if (session.endDate < new Date()) {
                     await prisma.superTicket.update({
                         where: {
-                            id: t.id
+                            id: tr.superTicket.id
                         },
                         data: {
                             used: true,
-                            remainingUses: t.remainingUses - 1
+                            remainingUses: tr.superTicket.remainingUses - 1
                         }
                     })
+                }
+            } else {
+                if (user.money >= TICKET_PRICE) {
+                    const tr = await prisma.transaction.create({
+                        data: {
+                            user: {
+                                connect: {
+                                    id: i
+                                }
+                            },
+                            price: TICKET_PRICE,
+                            ticket: {
+                                create: {
+                                    userId: i,
+                                    sessionId: id,
+                                }
+                            }
+                        },
+                        include: {
+                            ticket: true
+                        }
+                    })
+                    if (!tr.ticket) {
+                        throw new Error()
+                    }
+                    const session = await prisma.session.findUniqueOrThrow({
+                        where: {
+                            id: id
+                        }
+                    })
+                    if (session.endDate < new Date()) {
+                        await prisma.ticket.update({
+                            where: {
+                                id: tr.ticket.id
+                            },
+                            data: {
+                                used: true,
+                                remainingUses: 0
+                            }
+                        })
+                    }
                 }
             }
         }

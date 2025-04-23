@@ -1,9 +1,9 @@
 import {Request, Response} from "express"
 import {PrismaClient} from "../db/client"
 import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../validators/movie"
-import {logger} from "../app"
 import formatHTTPLoggerResponse from "../loggerformat"
 import {periodValidator} from "../validators/period"
+import {logger} from "../format"
 
 const db = new PrismaClient()
 
@@ -18,9 +18,8 @@ export class MovieController {
     async post(req: Request, res: Response) {
         const bodyValidator = createMovieValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            //TODO : change with logger.error : console.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
-            logger.info(formatHTTPLoggerResponse(req, res, {message: 'MovieController.post request : success'}))
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'MovieController.post request : validation error'}))
             return
         }
         const body = bodyValidator.value
@@ -32,8 +31,6 @@ export class MovieController {
     async put(req: Request, res: Response) {
         const idValidator = movieIdValidator.validate(req.params)
         if (idValidator.error !== undefined) {
-            //TODO : change with logger.error
-            console.error(idValidator.error)
             res.status(400).send(idValidator.error.details)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'MovieController.put request fail: validation error'}))
             return
@@ -50,7 +47,6 @@ export class MovieController {
         }
         const bodyValidator = updateMovieValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            //TODO : change with logger.error console.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'MovieController.put request fail: validation error'}))
             return

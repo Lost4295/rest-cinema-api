@@ -1,6 +1,9 @@
 import {NextFunction, Request, Response} from "express"
-import {verify} from "jsonwebtoken"
+import {JwtPayload, verify} from "jsonwebtoken"
 import {CurrentUser, userRoles} from "../types/currentUser"
+import {PrismaClient} from "../db/client"
+
+const db = new PrismaClient()
 
 export const classicAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -22,6 +25,10 @@ export const classicAuthMiddleware = async (req: Request, res: Response, next: N
         res.status(403).json({ message: "Forbidden" })
         return
       }
+        if (!user) {
+            res.status(401).json({message: "Unauthorized"})
+            return
+        }
 
       const currentUser = user as CurrentUser
 
@@ -40,6 +47,8 @@ export const classicAuthMiddleware = async (req: Request, res: Response, next: N
       }
 
       (req as any).user = currentUser
+
+        incrementUsage(user)
 
       next()
     })
@@ -100,6 +109,7 @@ export const employeeAuthMiddleware = async (req: Request, res: Response, next: 
       }
 
       (req as any).user = currentUser
+        incrementUsage(user)
 
       next()
     })
@@ -150,6 +160,7 @@ export const adminAuthMiddleware = async (req: Request, res: Response, next: Nex
       }
 
       (req as any).user = currentUser
+        incrementUsage(user)
 
       next()
     })
@@ -159,6 +170,24 @@ export const adminAuthMiddleware = async (req: Request, res: Response, next: Nex
     }
     res.status(500).send({ message: "Internal Server Error" })
   }
+}
+
+async function incrementUsage(usere: JwtPayload | string) {
+    //TODO plz mathias : get user and do this :
+    const user = await db.user.findUniqueOrThrow({
+        where: {
+            id: usere.id // à fix vu que j'ai pas l'userID
+        },
+        select: {id: true, requestsDone: true}
+    })
+    await db.user.update({
+        where: {
+            id: user.id
+        }, data: {
+            lastAPIUsage: new Date(),
+            requestsDone: user.requestsDone + 1
+        }
+    })
 }
 
 export const superAdminAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -194,6 +223,7 @@ export const superAdminAuthMiddleware = async (req: Request, res: Response, next
       }
 
       (req as any).user = currentUser
+        incrementUsage(user)
 
       next()
     })

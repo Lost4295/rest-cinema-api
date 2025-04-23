@@ -1,12 +1,10 @@
-import {Movie, Room} from "../db/client"
-
 export interface CinemaSessionBody {
     id: number,
     startDate: Date,
     endDate: Date,
     tickets?: number
-    movie: Movie,
-    room: Room
+    movie: number,
+    room: undefined
 }
 
 export interface CinemaSessionBodyWithRelations {

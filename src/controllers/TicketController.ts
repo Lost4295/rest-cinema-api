@@ -1,12 +1,14 @@
 import {Request, Response} from "express"
 import {userIdValidator} from "../validators/user"
-import {logger} from "../app"
 import formatHTTPLoggerResponse from "../loggerformat"
 import {PrismaClient, SuperTicket, Ticket} from "../db/client"
 import {ticketCreateValidator, ticketIdValidator, ticketUpdateValidator, ticketUseValidator} from "../validators/ticket"
+import {config} from "../config/config"
+import {logger} from "../format"
 
 
 const db = new PrismaClient()
+const TICKET_PRICE = config.ticketPrice
 
 export class TicketController {
     async get(req: Request, res: Response) {
@@ -44,37 +46,53 @@ export class TicketController {
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request fail : not enough money '}))
             return
         }
+        let ticket
         if (value.superTicket) {
-            const ticket = await db.superTicket.create({
+            await db.transaction.create({
                 data: {
                     user: {
                         connect: {
                             id: userId
                         }
                     },
-                    session: {}
+                    price: TICKET_PRICE, //????
+                    superTicket: {
+                        create: {
+                            user: {
+                                connect: {
+                                    id: userId
+                                }
+                            },
+                        }
+                    }
                 }
             })
-            res.status(200).send({"ticket": ticket, "message": "ticket bought successfully"})
+            res.status(200).send({"message": "ticket bought successfully"})
             logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request : success'}))
-            //todo : log
         } else {
-            const ticket = await db.ticket.create({
+            await db.transaction.create({
                 data: {
                     user: {
                         connect: {
                             id: userId
                         }
                     },
-                    session: {}
+                    price: TICKET_PRICE, //????
+                    ticket: {
+                        create: {
+                            user: {
+                                connect: {
+                                    id: userId
+                                }
+                            },
+                            session: {}
+                        }
+                    }
                 }
             })
-
-            res.status(200).send({"ticket": ticket, "message": "ticket bought successfully"})
+            res.status(200).send({"message": "ticket bought successfully"})
             logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request : success'}))
-            //todo : log
         }
-
 
     }
 

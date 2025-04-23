@@ -8,6 +8,6 @@ const cinemaRoomController = new CinemaRoomController()
 
 cinemaRoomRoutes.get("/", cinemaRoomController.get)
 cinemaRoomRoutes.post("/", cinemaRoomController.post)
-cinemaRoomRoutes.put("/", cinemaRoomController.put)
-cinemaRoomRoutes.delete("/", cinemaRoomController.delete)
+cinemaRoomRoutes.put("/:id", cinemaRoomController.put)
+cinemaRoomRoutes.delete("/:id", cinemaRoomController.delete)
 cinemaRoomRoutes.get("/:id", isOpen, cinemaRoomController.getOne)

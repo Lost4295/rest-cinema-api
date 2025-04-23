@@ -2,8 +2,8 @@ import {Request, Response} from "express"
 import {UserRoles, userRoles} from "../types/currentUser"
 import {PrismaClient} from '../db/client'
 import {createUserWithRoleValidator, updatePasswordValidator, userIdValidator} from "../validators/user"
-import {logger} from "../app"
 import formatHTTPLoggerResponse from "../loggerformat"
+import {logger} from "../format"
 
 const db = new PrismaClient()
 

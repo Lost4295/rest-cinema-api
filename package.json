@@ -8,6 +8,7 @@
     "prisma:generate": "prisma generate --schema=./src/db/schema.prisma",
     "prisma:sync": "prisma db push --schema=./src/db/schema.prisma",
     "prisma:seed": "ts-node src/db/seed.ts",
+    "prisma:reset": "prisma migrate reset --schema=./src/db/schema.prisma --force && npm run prisma:sync && npm run prisma:seed",
     "dev": "concurrently \"nodemon -e ts --exec ts-node src/main.ts\" \"npm run lint:watch\"",
     "start:dev": "nodemon -e ts --exec ts-node src/main.ts",
     "build": "tsc",

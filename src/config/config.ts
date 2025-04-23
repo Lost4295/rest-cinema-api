@@ -13,7 +13,7 @@ export interface Configuration {
     refreshTokenSecret: string
     port: number
     apiUrl: string
-
+    ticketPrice: number
 }
 
 const initConfig = (): Configuration => {
@@ -27,10 +27,12 @@ const initConfig = (): Configuration => {
         ACCESS_TOKEN_SECRET,
         REFRESH_TOKEN_SECRET,
         PORT,
-        API_URL
+        API_URL,
+        TICKET_PRICE
     } = process.env
 
-    if (!DB_NAME || !DB_PASSWORD || !DB_SYNCHRONISE || !DB_USER || !DB_HOST || !ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET || !PORT || !API_URL) {
+    if (!DB_NAME || !DB_PASSWORD || !DB_SYNCHRONISE || !DB_USER || !DB_HOST || !ACCESS_TOKEN_SECRET ||
+        !REFRESH_TOKEN_SECRET || !PORT || !API_URL || !TICKET_PRICE) {
         throw new Error("Missing environment variables")
     }
 
@@ -44,7 +46,8 @@ const initConfig = (): Configuration => {
         accessTokenSecret: ACCESS_TOKEN_SECRET,
         refreshTokenSecret: REFRESH_TOKEN_SECRET,
         port: parseInt(PORT),
-        apiUrl: API_URL
+        apiUrl: API_URL,
+        ticketPrice: parseInt(TICKET_PRICE)
     }
 }
 

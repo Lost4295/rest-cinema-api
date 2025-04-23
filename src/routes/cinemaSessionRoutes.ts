@@ -8,6 +8,6 @@ const cinemaSessionController = new CinemaSessionController()
 
 cinemaSessionRoutes.get("/", cinemaSessionController.get)
 cinemaSessionRoutes.post("/", cinemaSessionController.post)
-cinemaSessionRoutes.put("/", cinemaSessionController.put)
-cinemaSessionRoutes.delete("/", cinemaSessionController.delete)
+cinemaSessionRoutes.put("/:id", cinemaSessionController.put)
+cinemaSessionRoutes.delete("/:id", cinemaSessionController.delete)
 cinemaSessionRoutes.get("/:id/tickets", isOpen, cinemaSessionController.getOneTickets)

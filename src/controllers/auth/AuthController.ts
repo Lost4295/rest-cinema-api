@@ -5,8 +5,8 @@ import bcrypt from "bcrypt"
 import {config} from "../../config/config"
 import {sign} from "jsonwebtoken"
 import {CurrentUser, UserRoles, userRoles} from "../../types/currentUser"
-import {logger} from "../../app"
 import formatHTTPLoggerResponse from "../../loggerformat"
+import {logger} from "../../format"
 
 const accessTokenExpiration = config.env === "production" ? '30s' : '1d'
 const refreshTokenExpiration = '7d'

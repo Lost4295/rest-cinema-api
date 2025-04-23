@@ -4,15 +4,18 @@ import {cinemaRoomRoutes} from "./cinemaRoomRoutes"
 import {movieRoutes} from "./movieRoutes"
 import {userRoutes} from "./userRoutes"
 import {authRoutes} from "./auth"
-import {logger} from "../app"
 import formatHTTPLoggerResponse from "../loggerformat"
 import {ticketRoutes} from "./ticketRoutes"
 import {isOpen} from "../middleware/open"
+import {logger} from "../format"
 
 
 export const routesHandler = (app: Application) => {
     app.get('/', (req: Request, res: Response) => {
-        res.status(200).send({message: 'Hello World'})
+        res.status(200).send({
+            message: 'Hello World ! The cinema is currently ' +
+            (9 < new Date().getHours() && new Date().getHours() < 20) ? 'open.' : 'closed.'
+        })
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'Hello World request'}))
     })
     app.use('/auth', authRoutes)

@@ -20,29 +20,33 @@ model User {
   tickets      Ticket[]
   superTickets SuperTicket[]
   transactions Transaction[]
+  lastAPIUsage DateTime      @default(now()) @updatedAt
+  requestsDone Int           @default(0)
 }
 
 model Ticket {
-  id            Int          @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   sessionId     Int
-  session       Session      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session       Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   userId        Int
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  used          Boolean      @default(false)
-  remainingUses Int          @default(1)
-  isSuperTicket Boolean      @default(false)
-  transaction   Transaction?
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  used          Boolean     @default(false)
+  remainingUses Int         @default(1)
+  isSuperTicket Boolean     @default(false)
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId Int         @unique
 }
 
 model SuperTicket {
-  id            Int          @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   session       Session[]
   userId        Int
-  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  used          Boolean      @default(false)
-  remainingUses Int          @default(10)
-  isSuperTicket Boolean      @default(true)
-  transaction   Transaction?
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  used          Boolean     @default(false)
+  remainingUses Int         @default(10)
+  isSuperTicket Boolean     @default(true)
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId Int         @unique
 }
 
 model Token {
@@ -92,13 +96,11 @@ model Room {
 }
 
 model Transaction {
-  id            Int         @id @default(autoincrement())
-  userId        Int
-  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date          DateTime
-  price         Float
-  ticket        Ticket      @relation(fields: [ticketId], references: [id])
-  ticketId      Int         @unique
-  superTicket   SuperTicket @relation(fields: [superTicketId], references: [id])
-  superTicketId Int         @unique
+  id          Int          @id @default(autoincrement())
+  userId      Int
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime     @default(now())
+  price       Float
+  ticket      Ticket?
+  superTicket SuperTicket?
 }

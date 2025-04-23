@@ -5,9 +5,9 @@ import {
     createCinemaSessionValidator,
     updateCinemaSessionValidator
 } from "../validators/session"
-import {logger} from "../app"
 import formatHTTPLoggerResponse from "../loggerformat"
 import {periodValidator} from "../validators/period"
+import {logger} from "../format"
 
 const db = new PrismaClient()
 
@@ -19,7 +19,13 @@ export class CinemaSessionController {
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.get request fail : validation error'}))
             return
         }
-        const sessions = await db.session.findMany()
+        const sessions = await db.session.findMany({
+            where: {
+                room: {
+                    onMaintenance: false
+                }
+            }
+        })
         res.status(200).send(sessions)
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.get request : success'}))
     }
@@ -27,12 +33,40 @@ export class CinemaSessionController {
     async post(req: Request, res: Response) {
         const bodyValidator = createCinemaSessionValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            //TODO : change with logger.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.post request fail : validation error'}))
+            return
         }
         const body = bodyValidator.value
-        await db.session.create({data: body})
+
+        const room = await db.room.findUnique({where: {id: body.room}})
+        if (!room) {
+            res.status(404).send({"message": "ressource not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.post request fail : ressource not found'}))
+            return
+        }
+        if (room.onMaintenance) {
+            res.status(401).send({"message": "Room in on maintenance. Action impossible."})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.post request fail : room on maintenance'}))
+            return
+        }
+
+        await db.session.create({
+            data: {
+                startDate: body.startDate,
+                endDate: body.endDate,
+                movie: {
+                    connect: {
+                        id: body.movie
+                    }
+                },
+                room: {
+                    connect: {
+                        id: body.room
+                    }
+                },
+            }
+        })
         res.status(201).send({"message": "Ressource created successfully."})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.post request : success'}))
 
@@ -41,7 +75,6 @@ export class CinemaSessionController {
     async put(req: Request, res: Response) {
         const bodyValidator = updateCinemaSessionValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            //TODO : change with logger.error(bodyValidator.error)
             res.status(400).send(bodyValidator.error.details)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.put request fail : validation error'}))
             return
@@ -49,7 +82,8 @@ export class CinemaSessionController {
         const body = bodyValidator.value
         const session = await db.session.findUnique({
             where: {
-                id: body.id
+                id: body.id,
+                room: {onMaintenance: false}
             },
             include: {
                 room: true,
@@ -77,7 +111,8 @@ export class CinemaSessionController {
         const value = idValidator.value.id
         const session = await db.session.findUnique({
             where: {
-                id: value
+                id: value,
+                room: {onMaintenance: false}
             }
         })
         if (!session) {
@@ -95,9 +130,8 @@ export class CinemaSessionController {
     }
 
     async getOneTickets(req: Request, res: Response) {
-        const idValidator = cinemaSessionIdValidator.validate(req.query)
+        const idValidator = cinemaSessionIdValidator.validate(req.params)
         if (idValidator.error) {
-            console.log(idValidator.error)
             res.status(400).send(idValidator.error.details)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOneTickets request fail : validation error'}))
             return
@@ -105,7 +139,8 @@ export class CinemaSessionController {
         const value = idValidator.value.id
         const session = await db.session.findUnique({
             where: {
-                id: value
+                id: value,
+                room: {onMaintenance: false}
             }, include: {
                 room: true,
                 tickets: true,
@@ -118,8 +153,32 @@ export class CinemaSessionController {
             return
         }
         const remainingTickets = session.room.seats - session.tickets.length - session.superTickets.length
-        res.status(200).send({...session, "remaining_tickets": remainingTickets})
+        res.status(200).send({"remaining_tickets": remainingTickets})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOneTickets request : success'}))
+    }
+
+    async getOne(req: Request, res: Response) {
+        const idValidator = cinemaSessionIdValidator.validate(req.params)
+        if (idValidator.error) {
+            res.status(400).send(idValidator.error.details)
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOne request fail : validation error'}))
+            return
+        }
+        const value = idValidator.value.id
+        const session = await db.session.findUnique({
+            where: {
+                id: value,
+                room: {onMaintenance: false}
+            },
+            include: {movie: true}
+        })
+        if (!session) {
+            res.status(404).send({"message": "ressource not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOne request fail : ressource not found'}))
+            return
+        }
+        res.status(200).send(session)
+        logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOne request : success'}))
     }
 
     //Todo : get to séance as utilisateur
