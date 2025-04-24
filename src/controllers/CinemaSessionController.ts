@@ -6,17 +6,18 @@ import {
     updateCinemaSessionValidator
 } from "../validators/session"
 import formatHTTPLoggerResponse from "../loggerformat"
-import {periodValidator} from "../validators/period"
+import {sessionOptionsValidator} from "../validators/period"
 import {logger} from "../format"
+import moment from "moment"
 
 const db = new PrismaClient()
 
 export class CinemaSessionController {
     async get(req: Request, res: Response) {
-        const perValidator = periodValidator.validate(req.body)
+        const perValidator = sessionOptionsValidator.validate(req.body)
         if (perValidator.error) {
             res.status(400).send(perValidator.error.details)
-            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.get request fail : validation error'}))
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.get request fail : validation error'}))
             return
         }
         const sessions = await db.session.findMany({
@@ -26,7 +27,23 @@ export class CinemaSessionController {
                 }
             }
         })
-        res.status(200).send(sessions)
+        let session
+        if (perValidator.value !== undefined) {
+            if (perValidator.value.startDate !== undefined) {
+                session = sessions.filter((session) => {
+                    return moment(session.startDate).isBetween(moment(perValidator.value.startDate), moment(perValidator.value.endDate))
+                        && moment(session.endDate).isBetween(moment(perValidator.value.startDate), moment(perValidator.value.endDate))
+                })
+            }
+            if (perValidator.value.allSessions === true) {
+                session = sessions
+            }
+        } else {
+            session = sessions.filter((session) => {
+                return moment(session.startDate).isAfter(moment())
+            })
+        }
+        res.status(200).send(session)
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.get request : success'}))
     }
 
@@ -153,7 +170,10 @@ export class CinemaSessionController {
             return
         }
         const remainingTickets = session.room.seats - session.tickets.length - session.superTickets.length
-        res.status(200).send({"remaining_tickets": remainingTickets})
+        res.status(200).send({
+            "remaining_tickets": remainingTickets,
+            "people_on_session": session.tickets.length + session.superTickets.length
+        })
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOneTickets request : success'}))
     }
 
@@ -180,6 +200,4 @@ export class CinemaSessionController {
         res.status(200).send(session)
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOne request : success'}))
     }
-
-    //Todo : get to séance as utilisateur
 }

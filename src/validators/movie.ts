@@ -13,3 +13,4 @@ export const updateMovieValidator = Joi.object<MovieBody>({
     name: Joi.string().optional(),
     duration: Joi.number().optional(),
 }).options({abortEarly:false}).or('name', 'duration')
+

@@ -12,15 +12,16 @@ import {logger} from "../format"
 
 export const routesHandler = (app: Application) => {
     app.get('/', (req: Request, res: Response) => {
+        const message = 'Hello World ! The cinema is currently ' +
+            ((9 < new Date().getHours() && new Date().getHours() < 20) ? 'open.' : 'closed.')
         res.status(200).send({
-            message: 'Hello World ! The cinema is currently ' +
-            (9 < new Date().getHours() && new Date().getHours() < 20) ? 'open.' : 'closed.'
+            message: message
         })
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'Hello World request'}))
     })
     app.use('/auth', authRoutes)
     app.use('/sessions', cinemaSessionRoutes)
-    app.use('/rooms', isOpen, cinemaRoomRoutes)
+    app.use('/rooms', cinemaRoomRoutes)
     app.use('/movies', isOpen, movieRoutes)
 
     app.use('/users', userRoutes)

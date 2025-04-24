@@ -1,6 +1,7 @@
 import {PrismaClient} from './client'
 import {userRoles} from '../types/currentUser'
 import {config} from "../config/config"
+import moment from "moment"
 
 const prisma = new PrismaClient()
 
@@ -9,7 +10,7 @@ const TICKET_PRICE = config.ticketPrice
 async function main() {
     //create 5 movies
     console.log("Adding movies")
-    for (let i = 1; i < 6; i++) {
+    for (let i = 1; i < 10; i++) {
         await prisma.movie.create({
             data: {
                 name: `movie${i}`,
@@ -39,16 +40,27 @@ async function main() {
 
     //create 10 sessions
     console.log("Adding sessions")
-    for (let i = 1; i <= 10; i++) {
-        const date = new Date().getTime() + (i % 3 == 0 ? i + 5 : -i - 5) * 1000 * 60 * 60
-        const id = Math.floor(Math.random() * 5) + 1
+    for (let i = 1; i <= 40; i++) {
+        const momentstart = moment(getRandomDate(
+            moment(new Date()).subtract('2', 'months'),
+            moment(new Date()).add('2', 'months'),
+            9,
+            20
+        ))
+        const id = Math.floor(Math.random() * 10) + 1
         const m = await prisma.movie.findUniqueOrThrow({
             where: {id: id}
         })
-        const endDate = new Date(date + (m.duration * 60 * 1000) + (1000 * 30 * 60 * 60))
+        const date = momentstart.toISOString()
+        const endDate = momentstart.add(m.duration + 30, "minutes").toISOString()
+        const sessionPotentiel = await prisma.session.findMany({ //TODO : chevauchements
+        })
+        if (sessionPotentiel) {
+            continue
+        }
         await prisma.session.create({
             data: {
-                startDate: new Date(date),
+                startDate: date,
                 endDate: endDate,
                 movieId: id,
                 roomId: Math.floor(Math.random() * 10) + 1,
@@ -196,4 +208,11 @@ function resolveRole(i: number) {
         default:
             return userRoles.CLASSIC
     }
+}
+
+function getRandomDate(start: moment.Moment, end: moment.Moment, startHour: number, endHour: number) {
+    const date = new Date((+start.unix() + Math.random() * (end.unix() - start.unix())) * 1000)
+    const hour = startHour + Math.random() * (endHour - startHour) | 0
+    date.setHours(hour)
+    return date
 }

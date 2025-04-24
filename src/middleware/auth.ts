@@ -57,7 +57,7 @@ export const classicAuthMiddleware = async (req: Request, res: Response, next: N
       res.status(401).json({ message: "Unauthorized" })
       return
     }
-
+    5
   } catch (error) {
     if (error instanceof Error) {
     console.error(error.message)
@@ -176,7 +176,7 @@ async function incrementUsage(usere: JwtPayload | string) {
     //TODO plz mathias : get user and do this :
     const user = await db.user.findUniqueOrThrow({
         where: {
-            id: usere.id // à fix vu que j'ai pas l'userID
+          id: 1  // usere à fix vu que j'ai pas l'userID
         },
         select: {id: true, requestsDone: true}
     })

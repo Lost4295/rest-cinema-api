@@ -2,8 +2,9 @@ import {Request, Response} from "express"
 import {PrismaClient} from "../db/client"
 import {cinemaRoomIdValidator, createCinemaRoomValidator, updateCinemaRoomValidator} from "../validators/rooms"
 import formatHTTPLoggerResponse from "../loggerformat"
-import {periodValidator} from "../validators/period"
+import {sessionOptionsValidator} from "../validators/period"
 import {logger} from "../format"
+import moment from "moment"
 
 const db = new PrismaClient()
 
@@ -81,17 +82,15 @@ export class CinemaRoomController {
 
 
     async getOne(req: Request, res: Response) {
-        const perValidator = periodValidator.validate(req.body)
+        const perValidator = sessionOptionsValidator.validate(req.body)
         if (perValidator.error) {
             res.status(400).send(perValidator.error.details)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request fail : validation error'}))
             return
         }
 
-
         const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
-
             res.status(400).send(idValidator.error.details)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request fail : validation error'}))
             return
@@ -100,8 +99,7 @@ export class CinemaRoomController {
         const room = await db.room.findUnique({
             where: {
                 id: value,
-                onMaintenance:
-                    false
+                onMaintenance: false,
             }, include: {
                 sessions: {
                     include: {
@@ -115,10 +113,23 @@ export class CinemaRoomController {
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request fail : ressource not found'}))
             return
         }
+        let sessions
         if (perValidator.value !== undefined) {
-            console.log(perValidator.value)
+            if (perValidator.value.startDate !== undefined) {
+                sessions = room.sessions.filter((session) => {
+                    return moment(session.startDate).isBetween(moment(perValidator.value.startDate), moment(perValidator.value.endDate))
+                        && moment(session.endDate).isBetween(moment(perValidator.value.startDate), moment(perValidator.value.endDate))
+                })
+            }
+            if (perValidator.value.allSessions === true) {
+                sessions = room.sessions
+            }
+        } else {
+            sessions = room.sessions.filter((session) => {
+                return moment(session.startDate).isAfter(moment())
+            })
         }
-        res.status(200).send({"sessions": room.sessions})
+        res.status(200).send({"sessions": sessions})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request : success'}))
     }
 
