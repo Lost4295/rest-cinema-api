@@ -46,7 +46,6 @@ export class TicketController {
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request fail : not enough money '}))
             return
         }
-        let ticket
         if (value.superTicket) {
             await db.transaction.create({
                 data: {
@@ -68,7 +67,6 @@ export class TicketController {
                 }
             })
             res.status(200).send({"message": "ticket bought successfully"})
-            logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request : success'}))
         } else {
             await db.transaction.create({
                 data: {
@@ -91,8 +89,8 @@ export class TicketController {
                 }
             })
             res.status(200).send({"message": "ticket bought successfully"})
-            logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request : success'}))
         }
+        logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request : success'}))
 
     }
 

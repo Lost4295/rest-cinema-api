@@ -5,7 +5,7 @@ import {AuthController} from "../controllers/auth/AuthController"
 import {Tspec} from "tspec"
 import {UserController} from "../controllers/UserController"
 import {TicketController} from "../controllers/TicketController"
-
+import {UtilsController} from "../controllers/UtilsController"
 
 const cinemaSessionController = new CinemaSessionController()
 const cinemaRoomController = new CinemaRoomController()
@@ -13,6 +13,20 @@ const authController = new AuthController()
 const movieController = new MovieController()
 const userController = new UserController()
 const ticketController = new TicketController()
+const utilsController = new UtilsController()
+
+export type otherSpec = Tspec.DefineApiSpec<{
+    tags: ['Other'],
+    paths: {
+        '/': {
+            get: {
+                summary: "Outputs the state of the cinema. Can be open or closed."
+                handler: typeof utilsController.baseRoute,
+                responses: { 200: { message: string } }
+            }
+        }
+    }
+}>
 
 export type sessionSpec = Tspec.DefineApiSpec<{
     tags: ['Sessions'],
@@ -21,35 +35,40 @@ export type sessionSpec = Tspec.DefineApiSpec<{
             get: {
                 summary: 'Get all sessions.',
                 handler: typeof cinemaSessionController.get,
-                responses: { 200: { message: string } }
+                responses: { 200: { message: string }, 400: { message: string } }
             },
             post: {
-                summary: 'TODO: Write this',
+                summary: 'Create a session.',
                 handler: typeof cinemaSessionController.post,
-                responses: { 200: { message: string } }
+                responses: {
+                    201: { message: string },
+                    400: { message: string },
+                    404: { message: string },
+                    401: { message: string }
+                }
             },
         },
         '/sessions/{id}': {
             get: {
-                summary: 'TODO: finish this',
-                responses: { 200: { message: string } }
+                summary: 'Get information about a session.',
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             },
             put: {
-                summary: 'TODO: Write this',
+                summary: 'Update a session.',
                 handler: typeof cinemaSessionController.put,
-                responses: { 200: { message: string } }
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
             delete: {
-                summary: 'TODO: Write this',
+                summary: 'Delete a session.',
                 handler: typeof cinemaSessionController.delete,
-                responses: { 200: { message: string } }
+                responses: { 204: {}, 400: { message: string }, 404: { message: string } }
             }
         }
         '/sessions/{id}/tickets': {
             get: {
-                summary: 'TODO: Write this',
+                summary: 'Get information about the remaining tickets for a session.',
                 handler: typeof cinemaSessionController.getOneTickets,
-                responses: { 200: { message: string } }
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
         }
     }
@@ -65,28 +84,43 @@ export type roomSpec = Tspec.DefineApiSpec<{
                 responses: { 200: { message: string } }
             },
             post: {
-                summary: 'TODO: Write this',
+                summary: 'Create a room.',
                 handler: typeof cinemaRoomController.post,
-                responses: { 200: { message: string } }
+                responses: { 201: { message: string }, 400: { message: string } }
             },
         },
         '/rooms/{id}': {
             get: {
-                summary: 'TODO: Write this',
+                summary: 'Get information about one room.',
                 handler: typeof cinemaRoomController.getOne,
-                responses: { 200: { message: string } }
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             },
             put: {
-                summary: 'TODO: Write this',
+                summary: 'Update a room.',
                 handler: typeof cinemaRoomController.put,
-                responses: { 200: { message: string } }
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             },
             delete: {
-                summary: 'TODO: Write this',
+                summary: 'Delete a room.',
                 handler: typeof cinemaRoomController.delete,
-                responses: { 200: { message: string } }
+                responses: { 204: {}, 400: { message: string }, 404: { message: string } }
             }
-        }
+        },
+        "/:id/maintenance/on": {
+            get: {
+                summary: "Sets the selected room on maintenance. It will not be accessible.",
+                handler: typeof cinemaRoomController.setMaintenance,
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
+            }
+        },
+        "/:id/maintenance/off": {
+            get: {
+                summary: "Sets the selected room off maintenance. It will be available.",
+                handler: typeof cinemaRoomController.removeMaintenance,
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
+            }
+
+        },
     }
 }>
 
@@ -100,26 +134,26 @@ export type movieSpec = Tspec.DefineApiSpec<{
                 responses: { 200: { message: string } }
             },
             post: {
-                summary: 'TODO: Write this',
+                summary: 'Create a movie.',
                 handler: typeof movieController.post,
-                responses: { 200: { message: string } }
+                responses: { 201: { message: string }, 400: { message: string } }
             },
         },
         '/movies/{id}': {
             get: {
-                summary: 'TODO: Write this',
+                summary: 'Get information about one movie.',
                 handler: typeof movieController.getOne,
-                responses: { 200: { message: string } }
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             },
             put: {
-                summary: 'TODO: Write this',
+                summary: 'Modify a movie.',
                 handler: typeof movieController.put,
-                responses: { 200: { message: string } }
+                responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
             delete: {
-                summary: 'TODO: Write this',
+                summary: 'Delete a movie.',
                 handler: typeof movieController.delete,
-                responses: { 200: { message: string } }
+                responses: { 204: { message: string }, 400: { message: string }, 404: { message: string } }
             }
         }
     }
@@ -130,30 +164,47 @@ export type baseSpec = Tspec.DefineApiSpec<{
     paths: {
         '/auth/login': {
             post: {
-                summary: 'TODO: Write this'
+                summary: 'Logs the user.'
                 handler: typeof authController.login,
-                responses: {}
+                responses: {
+                    400: { message: string },
+                    404: { message: string },
+                    401: { message: string },
+                    200: { message: string },
+                }
             }
         },
         '/auth/register': {
             post: {
-                summary: 'TODO: Write this'
+                summary: 'Creates the user.'
                 handler: typeof authController.register,
-                responses: {}
+                responses: {
+                    400: { message: string },
+                    201: { message: string },
+                }
             }
         },
         '/auth/logout': {
             get: {
-                summary: 'TODO: Write this'
+                summary: 'Disconnects the user.'
                 handler: typeof authController.logout,
-                responses: {}
+                responses: {
+                    401: { message: string },
+                    403: { message: string },
+                    200: { message: string },
+                }
             }
         },
         '/auth/refresh-token': {
             get: {
-                summary: 'TODO: Write this'
+                summary: 'Creates a new token for a user.'
                 handler: typeof authController.refreshToken,
-                responses: {}
+                responses: {
+                    403: { message: string },
+                    404: { message: string },
+                    401: { message: string },
+                    200: { message: string },
+                }
             }
         },
     }
@@ -164,35 +215,52 @@ export type userSpec = Tspec.DefineApiSpec<{
     paths: {
         '/users': {
             get: {
-                summary: 'TODO: Write this',
+                summary: 'Get all users.',
                 handler: typeof userController.getAll,
-                responses: {}
+                responses: { 200: { message: string }, 500: { message: string }, 404: { message: string } }
             },
             post: {
-                summary: 'TODO: Write this',
+                summary: 'Create a user with a specific role.',
                 handler: typeof userController.createUserWithRole,
-                responses: {}
+                responses: { 201: { message: string }, 400: { message: string }, 500: { message: string } }
             }
         },
         '/users/profile': {
             get: {
-                summary: 'TODO: Write this',
+                summary: 'Get information about the connected user.',
                 handler: typeof userController.getProfile,
-                responses: {}
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    401: { message: string }
+                    404: { message: string }
+                    500: { message: string }
+                }
             }
         },
         '/users/password': {
             put: {
-                summary: 'TODO: Write this',
+                summary: 'Update the connected user\'s password.',
                 handler: typeof userController.updatePassword,
-                responses: {}
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    401: { message: string }
+                    404: { message: string }
+                    500: { message: string }
+                }
             }
         },
         '/users/{id}': {
             delete: {
-                summary: 'TODO: Write this',
+                summary: 'Delete a user.',
                 handler: typeof userController.deleteUser,
-                responses: {}
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    404: { message: string }
+                    500: { message: string }
+                }
             }
         },
     }
@@ -205,29 +273,46 @@ export type ticketSpec = Tspec.DefineApiSpec<{
             get: {
                 summary: 'Get all tickets.',
                 handler: typeof ticketController.get,
-                responses: { 200: { message: string } }
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                }
             },
             post: {
-                summary: 'TODO: Write this',
+                summary: 'Create a ticket associated to the user.',
                 handler: typeof ticketController.buyTicket,
-                responses: { 200: { message: string } }
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                }
             },
         },
         '/tickets/{id}': {
             get: {
-                summary: 'TODO: Write this',
+                summary: 'Associate a ticket to a session.',
                 handler: typeof ticketController.useTicket,
-                responses: { 200: { message: string } }
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                }
             },
             put: {
-                summary: 'TODO: Write this',
+                summary: 'Modify a ticket',
                 handler: typeof ticketController.modifyTicket,
-                responses: { 200: { message: string } }
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    404: { message: string }
+                }
             },
             delete: {
-                summary: 'TODO: Write this',
+                summary: 'Delete a ticket.',
                 handler: typeof ticketController.delete,
-                responses: { 200: { message: string } }
+                responses: {
+                    204: { message: string },
+                    400: { message: string },
+                    404: { message: string }
+                }
             }
         }
     }

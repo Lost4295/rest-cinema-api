@@ -1,3 +1,3 @@
-import dotenv from 'dotenv';
+import dotenvx from '@dotenvx/dotenvx';
 
-dotenv.config();
+dotenvx.config({path: '.env.tests'});

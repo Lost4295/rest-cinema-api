@@ -159,7 +159,7 @@ export class CinemaRoomController {
                 id: room.id
             }
         })
-        res.status(204).send({"message": "room on maintenance"})
+        res.status(200).send({"message": "room on maintenance"})
         logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.setMaintenance request success'}))
     }
 
@@ -189,7 +189,7 @@ export class CinemaRoomController {
                 id: room.id
             }
         })
-        res.status(204).send({"message": "room no longer on maintenance"})
+        res.status(200).send({"message": "room no longer on maintenance"})
         logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.removeMaintenance request success'}))
     }
 }

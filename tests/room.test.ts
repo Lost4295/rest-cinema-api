@@ -1,18 +1,13 @@
-import {afterEach, beforeEach, describe, expect, it} from "@jest/globals"
+import {describe, expect, it} from "@jest/globals"
 import app from "../src/app"
 import request from "supertest"
-import {cleanDB} from "./utils"
 import {PrismaClient} from '../src/db/client'
 
 const db = new PrismaClient()
 
 //TODO : test routes
 
-beforeEach(async () => {
-    await cleanDB()
-})
 
-afterEach(async () => await cleanDB())
 
 describe("room controller ", () => {
     it('returns 200 and nothing on GET:/rooms', async () => {
