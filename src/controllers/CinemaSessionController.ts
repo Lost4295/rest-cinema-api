@@ -9,6 +9,7 @@ import formatHTTPLoggerResponse from "../loggerformat"
 import {sessionOptionsValidator} from "../validators/period"
 import {logger} from "../format"
 import moment from "moment"
+import {isChevauchement} from "../utils";
 
 const db = new PrismaClient()
 
@@ -16,7 +17,7 @@ export class CinemaSessionController {
     async get(req: Request, res: Response) {
         const perValidator = sessionOptionsValidator.validate(req.body)
         if (perValidator.error) {
-            res.status(400).send(perValidator.error.details)
+            res.status(400).send({"message": perValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.get request fail : validation error'}))
             return
         }
@@ -50,7 +51,7 @@ export class CinemaSessionController {
     async post(req: Request, res: Response) {
         const bodyValidator = createCinemaSessionValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            res.status(400).send(bodyValidator.error.details)
+            res.status(400).send({"message": bodyValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.post request fail : validation error'}))
             return
         }
@@ -65,6 +66,12 @@ export class CinemaSessionController {
         if (room.onMaintenance) {
             res.status(401).send({"message": "Room in on maintenance. Action impossible."})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.post request fail : room on maintenance'}))
+            return
+        }
+        const sessions = await db.session.findMany()
+        if (isChevauchement(sessions, body)) {
+            res.status(401).send({"message": "Session overlapping. Action impossible"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.post request fail : Session overlapping'}))
             return
         }
 
@@ -92,7 +99,7 @@ export class CinemaSessionController {
     async put(req: Request, res: Response) {
         const bodyValidator = updateCinemaSessionValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            res.status(400).send(bodyValidator.error.details)
+            res.status(400).send({"message": bodyValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.put request fail : validation error'}))
             return
         }
@@ -121,7 +128,7 @@ export class CinemaSessionController {
         const idValidator = cinemaSessionIdValidator.validate(req.query)
         if (idValidator.error) {
             console.log(idValidator.error)
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send({"messsage": idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.delete request fail : validation error'}))
             return
         }
@@ -149,7 +156,7 @@ export class CinemaSessionController {
     async getOneTickets(req: Request, res: Response) {
         const idValidator = cinemaSessionIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send({"messsage": idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOneTickets request fail : validation error'}))
             return
         }
@@ -180,7 +187,7 @@ export class CinemaSessionController {
     async getOne(req: Request, res: Response) {
         const idValidator = cinemaSessionIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send({"messsage": idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOne request fail : validation error'}))
             return
         }

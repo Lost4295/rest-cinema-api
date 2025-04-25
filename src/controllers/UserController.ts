@@ -31,7 +31,7 @@ export class UserController {
         try {
             const bodyValidator = createUserWithRoleValidator.validate(req.body)
             if (bodyValidator.error !== undefined) {
-                res.status(400).json(bodyValidator.error.details)
+                res.status(400).json(bodyValidator.error.message)
                 logger.error(formatHTTPLoggerResponse(req, res, {message: 'CreateUserWithRoleController request fail : validation error'}))
                 return
             }
@@ -58,7 +58,7 @@ export class UserController {
             }
             const idValidator = userIdValidator.validate({id: parseInt(currentUser.id)})
             if (idValidator.error) {
-                res.status(400).json(idValidator.error.details)
+                res.status(400).json(idValidator.error.message)
                 logger.error(formatHTTPLoggerResponse(req, res, {message: 'UpdatePasswordController request fail : validation error'}))
                 return
             }
@@ -66,7 +66,7 @@ export class UserController {
 
             const bodyValidator = updatePasswordValidator.validate(req.body)
             if (bodyValidator.error !== undefined) {
-                res.status(400).json(bodyValidator.error.details)
+                res.status(400).json(bodyValidator.error.message)
                 logger.error(formatHTTPLoggerResponse(req, res, {message: 'UpdatePasswordController request fail : validation error'}))
                 return
             }
@@ -104,7 +104,7 @@ export class UserController {
         try {
             const idValidator = userIdValidator.validate(parseInt(req.params.id))
             if (idValidator.error) {
-                res.status(400).json(idValidator.error.details)
+                res.status(400).json(idValidator.error.message)
                 logger.error(formatHTTPLoggerResponse(req, res, {message: 'DeleteUserController request fail : validation error'}))
                 return
             }
@@ -150,7 +150,7 @@ export class UserController {
             }
             const idValidator = userIdValidator.validate({id: parseInt(currentUser.id)})
             if (idValidator.error) {
-                res.status(400).json(idValidator.error.details)
+                res.status(400).json(idValidator.error.message)
                 logger.error(formatHTTPLoggerResponse(req, res, {message: 'GetProfileController request fail : validation error'}))
                 return
             }

@@ -2,15 +2,15 @@ import {PrismaClient} from './client'
 import {userRoles} from '../types/currentUser'
 import {config} from "../config/config"
 import moment from "moment"
+import {isChevauchement} from "../utils"
 
 const prisma = new PrismaClient()
 
 const TICKET_PRICE = config.ticketPrice
 
-async function main() {
-    //create 5 movies
+async function createMovie() {
     console.log("Adding movies")
-    for (let i = 1; i < 10; i++) {
+    for (let i = 1; i <= 10; i++) {
         await prisma.movie.create({
             data: {
                 name: `movie${i}`,
@@ -20,7 +20,9 @@ async function main() {
             }
         })
     }
-    //create 10 rooms
+}
+
+async function createRoom() {
     console.log("Adding rooms")
     for (let i = 1; i <= 10; i++) {
         await prisma.room.create({
@@ -37,25 +39,34 @@ async function main() {
             }
         })
     }
+}
 
-    //create 10 sessions
+async function createSession() {
     console.log("Adding sessions")
-    for (let i = 1; i <= 40; i++) {
+    let i = 1
+    while (i < 41) {
         const momentstart = moment(getRandomDate(
             moment(new Date()).subtract('2', 'months'),
             moment(new Date()).add('2', 'months'),
             9,
             20
         ))
+        const endmoment = moment(momentstart)
         const id = Math.floor(Math.random() * 10) + 1
         const m = await prisma.movie.findUniqueOrThrow({
             where: {id: id}
         })
         const date = momentstart.toISOString()
-        const endDate = momentstart.add(m.duration + 30, "minutes").toISOString()
-        const sessionPotentiel = await prisma.session.findMany({ //TODO : chevauchements
-        })
-        if (sessionPotentiel) {
+        const endDate = endmoment.add(m.duration + 30, "minutes").toISOString()
+        const sessions = await prisma.session.findMany()
+        const roomID = Math.floor(Math.random() * 10) + 1
+        const body = {
+            startDate: new Date(date),
+            endDate: new Date(endDate),
+            movieId: id,
+            roomId: roomID
+        }
+        if (isChevauchement(sessions, body)) {
             continue
         }
         await prisma.session.create({
@@ -63,14 +74,16 @@ async function main() {
                 startDate: date,
                 endDate: endDate,
                 movieId: id,
-                roomId: Math.floor(Math.random() * 10) + 1,
+                roomId: roomID,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             }
         })
+        i++
     }
+}
 
-    //create 8 users
+async function createUser() {
     console.log("Adding users")
     for (let i = 1; i <= 8; i++) {
         await prisma.user.create({
@@ -84,18 +97,26 @@ async function main() {
             }
         })
     }
+}
+
+async function createTicket() {
     console.log("Adding tickets")
     // create tickets for them randomly
     for (let i = 6; i <= 8; i++) {
         const tickets = Math.floor(Math.random() * 5) + 1
         for (let j = 0; j < tickets; j++) {
-            const id = Math.floor(Math.random() * 10) + 1
+            const sessionID = Math.floor(Math.random() * 10) + 1
             const user = await prisma.user.findUniqueOrThrow({
                 where: {
                     id: i
                 }
             })
             if (Math.random() * 2 > 1 && user.money > TICKET_PRICE * 4) {
+                const session = await prisma.session.findUniqueOrThrow({
+                    where: {
+                        id: sessionID
+                    }
+                })
                 const tr = await prisma.transaction.create({
                     data: {
                         user: {
@@ -109,7 +130,7 @@ async function main() {
                                 userId: i,
                                 session: {
                                     connect: {
-                                        id: id
+                                        id: sessionID
                                     },
                                 },
                             }
@@ -119,11 +140,7 @@ async function main() {
                 if (!tr.superTicket) {
                     throw new Error()
                 }
-                const session = await prisma.session.findUniqueOrThrow({
-                    where: {
-                        id: id
-                    }
-                })
+
                 if (session.endDate < new Date()) {
                     await prisma.superTicket.update({
                         where: {
@@ -137,6 +154,11 @@ async function main() {
                 }
             } else {
                 if (user.money >= TICKET_PRICE) {
+                    const session = await prisma.session.findUniqueOrThrow({
+                        where: {
+                            id: sessionID
+                        }
+                    })
                     const tr = await prisma.transaction.create({
                         data: {
                             user: {
@@ -148,7 +170,7 @@ async function main() {
                             ticket: {
                                 create: {
                                     userId: i,
-                                    sessionId: id,
+                                    sessionId: sessionID,
                                 }
                             }
                         },
@@ -159,11 +181,7 @@ async function main() {
                     if (!tr.ticket) {
                         throw new Error()
                     }
-                    const session = await prisma.session.findUniqueOrThrow({
-                        where: {
-                            id: id
-                        }
-                    })
+
                     if (session.endDate < new Date()) {
                         await prisma.ticket.update({
                             where: {
@@ -179,6 +197,14 @@ async function main() {
             }
         }
     }
+}
+
+async function main() {
+    await createMovie()
+    await createRoom()
+    await createSession()
+    await createUser()
+    await createTicket()
     console.log("All done !")
 }
 

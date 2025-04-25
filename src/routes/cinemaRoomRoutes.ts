@@ -12,3 +12,14 @@ cinemaRoomRoutes.delete("/:id", cinemaRoomController.delete)
 cinemaRoomRoutes.get("/:id", cinemaRoomController.getOne)
 cinemaRoomRoutes.get("/:id/maintenance/on", cinemaRoomController.setMaintenance)
 cinemaRoomRoutes.get("/:id/maintenance/off", cinemaRoomController.removeMaintenance)
+
+export const testCinemaRoomRoutes = Router()
+
+
+testCinemaRoomRoutes.get("/", cinemaRoomController.get)
+testCinemaRoomRoutes.post("/", cinemaRoomController.post)
+testCinemaRoomRoutes.put("/:id", cinemaRoomController.put)
+testCinemaRoomRoutes.delete("/:id", cinemaRoomController.delete)
+testCinemaRoomRoutes.get("/:id", cinemaRoomController.getOne)
+testCinemaRoomRoutes.get("/:id/maintenance/on", cinemaRoomController.setMaintenance)
+testCinemaRoomRoutes.get("/:id/maintenance/off", cinemaRoomController.removeMaintenance)

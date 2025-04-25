@@ -20,7 +20,7 @@ export class AuthController {
         const bodyValidator = authValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
             console.error(bodyValidator.error)
-            res.status(400).json(bodyValidator.error.details)
+            res.status(400).json(bodyValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request fail : validation error'}))
             return
         }
@@ -79,7 +79,7 @@ export class AuthController {
         const bodyValidator = authValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
             console.error(bodyValidator.error)
-            res.status(400).json(bodyValidator.error.details)
+            res.status(400).json(bodyValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.register request fail : validation error'}))
             return
         }

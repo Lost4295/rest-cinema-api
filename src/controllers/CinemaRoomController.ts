@@ -18,7 +18,7 @@ export class CinemaRoomController {
     async post(req: Request, res: Response) {
         const bodyValidator = createCinemaRoomValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            res.status(400).send(bodyValidator.error.details)
+            res.status(400).send(bodyValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.post request fail : validation error'}))
             return
         }
@@ -32,7 +32,7 @@ export class CinemaRoomController {
     async put(req: Request, res: Response) {
         const bodyValidator = updateCinemaRoomValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            res.status(400).send(bodyValidator.error.details)
+            res.status(400).send(bodyValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.put request fail : validation error'}))
 
             return
@@ -56,7 +56,7 @@ export class CinemaRoomController {
         const idValidator = cinemaRoomIdValidator.validate(req.query)
         if (idValidator.error) {
             console.log(idValidator.error)
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send(idValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.delete request fail : validation error'}))
             return
         }
@@ -84,14 +84,14 @@ export class CinemaRoomController {
     async getOne(req: Request, res: Response) {
         const perValidator = sessionOptionsValidator.validate(req.body)
         if (perValidator.error) {
-            res.status(400).send(perValidator.error.details)
+            res.status(400).send(perValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request fail : validation error'}))
             return
         }
 
         const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send(idValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request fail : validation error'}))
             return
         }
@@ -136,7 +136,7 @@ export class CinemaRoomController {
     async setMaintenance(req: Request, res: Response) {
         const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send(idValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.setMaintenance request fail : validation error'}))
             return
         }
@@ -166,7 +166,7 @@ export class CinemaRoomController {
     async removeMaintenance(req: Request, res: Response) {
         const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send(idValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.removeMaintenance request fail : validation error'}))
             return
         }

@@ -1,18 +1,13 @@
-import {afterEach, beforeEach, describe, expect, it} from "@jest/globals"
+import {describe, expect, it} from "@jest/globals"
 import app from "../src/app"
 import request from "supertest"
 import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../src/validators/movie"
-import {cleanDB} from "./utils"
 import {PrismaClient} from '../src/db/client'
 import {ticketCreateValidator} from "../src/validators/ticket";
 
 
 const db = new PrismaClient()
 
-beforeEach(async () => {
-    await cleanDB()
-})
-afterEach(async () => await cleanDB())
 
 
 describe('ticket controller :', () => {
@@ -34,7 +29,7 @@ describe('ticket controller :', () => {
         const res = await request(app).post('/tickets')
         expect(expectedErrorObject).toBeDefined()
         expect(res.statusCode).toEqual(400)
-        expect(res.body).toEqual(expectedErrorObject!.error!.details)
+        expect(res.body).toEqual(expectedErrorObject!.error!.message)
     })
     it('returns 201 on POST:/tickets with good data', async () => {
         const payload = {
@@ -52,7 +47,7 @@ describe('ticket controller :', () => {
         const expectedError = movieIdValidator.validate({id: id})
         const res = await request(app).put('/movies/' + id)
         expect(res.statusCode).toEqual(400)
-        expect(res.body).toEqual(expectedError!.error!.details)
+        expect(res.body).toEqual(expectedError!.error!.message)
     })
     it('returns 400 when data is invalid on PUT:/movies/{$id}', async () => {
         const movies = await createRandomMovieData()
@@ -65,7 +60,7 @@ describe('ticket controller :', () => {
         expect(expectedErrorBody.error).toBeDefined()
         expect(expectedErrorBody.value).toEqual({})
         expect(res.statusCode).toEqual(400)
-        expect(res.body).toEqual(expectedErrorBody!.error!.details)
+        expect(res.body).toEqual(expectedErrorBody!.error!.message)
 
     })
     it('returns 404 on PUT:/movies/{$id} with invalid id ', async () => {
@@ -135,7 +130,7 @@ describe('ticket controller :', () => {
         const expectedError = movieIdValidator.validate({id: id})
         const res = await request(app).delete('/movies/' + id)
         expect(res.statusCode).toEqual(400)
-        expect(res.body).toEqual(expectedError!.error!.details)
+        expect(res.body).toEqual(expectedError!.error!.message)
     })
     it('returns 404 on DELETE:/movies/{$id} with invalid id ', async () => {
         const id = 0xffffff

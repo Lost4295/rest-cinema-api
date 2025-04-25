@@ -13,7 +13,7 @@
     "start:dev": "nodemon -e ts --exec ts-node src/main.ts",
     "build": "tsc",
     "start": "npm run build && node ./dist/src/main.js",
-    "test": "jest --coverage",
+    "test": "dotenvx run -f .env.tests -- npm run prisma:reset && jest --coverage && dotenvx run -f .env -- prisma generate --schema=./src/db/schema.prisma",
     "lint": "eslint .",
     "lint:watch": "onchange '**/*.{js,ts}' -- eslint ."
   },
@@ -53,6 +53,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
+    "moment-range": "^4.0.2",
     "tspec": "^0.1.116",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"

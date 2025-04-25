@@ -20,7 +20,7 @@ export const logger = winston.createLogger({
         })),
     transports:
         [
-            new winston.transports.Console(),
+            // new winston.transports.Console(),
             new DailyRotateFile({
                 // each file name includes current date
                 filename: 'logs/logs-%DATE%.log',

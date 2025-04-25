@@ -14,7 +14,7 @@ export class TicketController {
     async get(req: Request, res: Response) {
         const validator = userIdValidator.validate(req.query)
         if (validator.error) {
-            res.status(400).send(validator.error.details)
+            res.status(400).send(validator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.get request fail : bad request '}))
             return
         }
@@ -33,7 +33,7 @@ export class TicketController {
     async buyTicket(req: Request, res: Response) {
         const validator = ticketCreateValidator.validate(req.query)
         if (validator.error) {
-            res.status(400).send(validator.error.details)
+            res.status(400).send(validator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request fail : bad request '}))
             return
         }
@@ -98,7 +98,7 @@ export class TicketController {
     async modifyTicket(req: Request, res: Response) {
         const idValidator = ticketIdValidator.validate(req.query)
         if (idValidator.error !== undefined) {
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send(idValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.modifyTicket request fail: validation error'}))
             return
         }
@@ -122,7 +122,7 @@ export class TicketController {
         }
         const bodyValidator = ticketUpdateValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            res.status(400).send(bodyValidator.error.details)
+            res.status(400).send(bodyValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.modifyTicket request fail: validation error'}))
             return
         }
@@ -141,7 +141,7 @@ export class TicketController {
         const idValidator = ticketIdValidator.validate(req.query)
         if (idValidator.error) {
             console.log(idValidator.error)
-            res.status(400).send(idValidator.error.details)
+            res.status(400).send(idValidator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.delete request fail : validation error'}))
             return
         }
@@ -183,13 +183,13 @@ export class TicketController {
     async useTicket(req: Request, res: Response) {
         const validator = ticketIdValidator.validate(req.query)
         if (validator.error) {
-            res.status(400).send(validator.error.details)
+            res.status(400).send(validator.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.useTicket request fail : bad request '}))
             return
         }
         const validator2 = ticketUseValidator.validate(req.body)
         if (validator2.error) {
-            res.status(400).send(validator2.error.details)
+            res.status(400).send(validator2.error.message)
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.useTicket request fail : bad request '}))
             return
         }

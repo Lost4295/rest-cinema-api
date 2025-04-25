@@ -5,6 +5,7 @@ import expressPrometheusMiddleware from "express-prometheus-middleware"
 
 const app = express()
 
+const isTest = process.env.ENV === "test"
 app.use(express.json())
 app.use(cookieParser())
 
@@ -42,6 +43,6 @@ app.use(expressPrometheusMiddleware({
     //   labels.contentType = req.headers['content-type'];
     // },
 }))
-routesHandler(app)
+routesHandler(app, isTest)
 
 export default app

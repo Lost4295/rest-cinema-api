@@ -11,3 +11,12 @@ cinemaSessionRoutes.get("/:id", cinemaSessionController.getOne)
 cinemaSessionRoutes.put("/:id", cinemaSessionController.put)
 cinemaSessionRoutes.delete("/:id", cinemaSessionController.delete)
 cinemaSessionRoutes.get("/:id/tickets", cinemaSessionController.getOneTickets)
+
+export const testCinemaSessionRoutes = Router()
+
+testCinemaSessionRoutes.get("/", cinemaSessionController.get)
+testCinemaSessionRoutes.post("/", cinemaSessionController.post)
+testCinemaSessionRoutes.get("/:id", cinemaSessionController.getOne)
+testCinemaSessionRoutes.put("/:id", cinemaSessionController.put)
+testCinemaSessionRoutes.delete("/:id", cinemaSessionController.delete)
+testCinemaSessionRoutes.get("/:id/tickets", cinemaSessionController.getOneTickets)

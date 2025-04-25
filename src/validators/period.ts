@@ -5,7 +5,7 @@ export const periodValidator = Joi.object({
     endDate: Joi.date().when('startDate', {is: Joi.exist(), then: Joi.required()}),
 }).options({abortEarly: false}).custom((value, helpers) => {
     if (value.startDate > value.endDate) {
-        return helpers.error("any.invalid")
+        return helpers.message({"custom": "The startDate cannot be after the endDate."})
     }
     return value
 })
@@ -13,10 +13,12 @@ export const periodValidator = Joi.object({
 export const sessionOptionsValidator = Joi.object({
     startDate: Joi.date().optional(),
     endDate: Joi.date().when('startDate', {is: Joi.exist(), then: Joi.required()}),
-    allSessions: Joi.boolean().optional()
+    allSessions: Joi.boolean().when('startDate', {is: Joi.exist(), then: Joi.forbidden(), otherwise: Joi.optional()})
 }).options({abortEarly: false}).custom((value, helpers) => {
     if (value.startDate > value.endDate) {
-        return helpers.error("any.invalid")
+        return helpers.message({"custom": "The startDate cannot be after the endDate."})
     }
     return value
-}).or('startDate', 'allSessions')
+})
+//.or('startDate', 'allSessions')
+

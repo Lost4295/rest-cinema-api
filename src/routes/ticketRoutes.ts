@@ -11,3 +11,11 @@ ticketRoutes.post("/", ticketController.buyTicket)
 ticketRoutes.put("/:id", ticketController.modifyTicket)
 ticketRoutes.delete("/:id", ticketController.delete)
 ticketRoutes.get("/:id", ticketController.useTicket)
+
+export const testTicketRoutes = Router()
+
+testTicketRoutes.get("/", classicAuthMiddleware, ticketController.get)
+testTicketRoutes.post("/", ticketController.buyTicket)
+testTicketRoutes.put("/:id", ticketController.modifyTicket)
+testTicketRoutes.delete("/:id", ticketController.delete)
+testTicketRoutes.get("/:id", ticketController.useTicket)
