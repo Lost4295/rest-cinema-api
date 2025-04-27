@@ -6,10 +6,8 @@ import {extendMoment} from 'moment-range'
 const momentRanger = extendMoment(Moment)
 const db = new PrismaClient()
 
-export async function cleanDB() {
-    await db.movie.deleteMany({where: {}})
-    await db.room.deleteMany({where: {}})
-    await db.session.deleteMany({where: {}})
+export function jfy(data: any) {
+    return JSON.parse(JSON.stringify(data))
 }
 
 

@@ -208,12 +208,11 @@ describe("validator set", () => {
             const body = {}
             const validator = updateCinemaRoomValidator.validate(body)
             expect(validator.error).not.toBe(undefined)
-            expect(validator.error?.message).toBe("\"id\" is required. \"value\" must contain at least one of " +
+            expect(validator.error?.message).toBe("\"value\" must contain at least one of " +
                 "[name, description, images, type, seats, disabledAccess]")
         })
         test('update Validator is invalid when parameter are missing', () => {
             const body = {
-                id: 5
             }
             const validator = updateCinemaRoomValidator.validate(body)
             expect(validator.error).not.toBe(undefined)
@@ -222,14 +221,12 @@ describe("validator set", () => {
         })
         test('update Validator is valid ', () => {
             const body = {
-                id: 5,
                 images: ["test"]
             }
             const validator = updateCinemaRoomValidator.validate(body)
             expect(validator.error).toBe(undefined)
             expect(validator.value!.images).toStrictEqual(body.images) //checks if objects are exactly the same
             const body2 = {
-                id: 5,
                 disabledAccess: true,
             }
             const validator2 = updateCinemaRoomValidator.validate(body2)

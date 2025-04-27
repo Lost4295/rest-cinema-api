@@ -14,7 +14,6 @@ export const cinemaRoomIdValidator = Joi.object<CinemaRoomBody>({
     id:Joi.number().required()
 }).options({abortEarly:false})
 export const updateCinemaRoomValidator = Joi.object<CinemaRoomBody>({
-    id:Joi.number().required(),
     name: Joi.string().optional(),
     description: Joi.string().optional(),
     images: Joi.array().items(Joi.string()).optional(),

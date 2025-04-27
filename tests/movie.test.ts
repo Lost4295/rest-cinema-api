@@ -4,12 +4,13 @@ import request from "supertest"
 import {createMovieValidator, movieIdValidator, updateMovieValidator} from "../src/validators/movie"
 import {PrismaClient} from '../src/db/client'
 import moment from "moment";
+import {jfy} from "../src/utils";
 
 const db = new PrismaClient()
 
 describe('movie controller :', () => {
     it('returns all existing films on GET:/movies when data is there', async () => {
-        const expectedMovies = JSON.parse(JSON.stringify((await db.movie.findMany())))
+        const expectedMovies = jfy((await db.movie.findMany()))
         const res = await request(app).get('/movies')
         expect(res.statusCode).toEqual(200)
         expect(res.body).toBeDefined()
@@ -19,7 +20,7 @@ describe('movie controller :', () => {
     it('returns the selected movie on GET:/movies/{$id}', async () => {
         const movies = await db.movie.findMany()
         // transform Date object given by prisma into string
-        const expectedMovie = JSON.parse(JSON.stringify(movies[2]))
+        const expectedMovie = jfy(movies[2])
         const res = await request(app).get('/movies/' + expectedMovie.id)
         expect(res.body).toEqual(expectedMovie)
         expect(res.statusCode).toEqual(200)
@@ -44,7 +45,7 @@ describe('movie controller :', () => {
         const startDate = new Date()
         const endDate = new Date(moment(startDate).add('5', 'days').toISOString())
         // transform Date object given by prisma into string
-        const expectedMovie = JSON.parse(JSON.stringify(movies[2]))
+        const expectedMovie = jfy(movies[2])
         expectedMovie.sessions = expectedMovie.sessions.filter((session: { startDate: Date; endDate: Date }) => {
             return moment(session.startDate).isBetween(moment(startDate), moment(endDate))
                 && moment(session.endDate).isBetween(moment(startDate), moment(endDate))
@@ -165,7 +166,6 @@ describe('movie controller :', () => {
         const expectedError = movieIdValidator.validate({id: id})
         const res = await request(app).delete('/movies/' + id)
         expect(res.statusCode).toEqual(400)
-        console.log(res.body)
         expect(res.body.message).toEqual(expectedError!.error!.message)
     })
     it('returns 404 on DELETE:/movies/{$id} with invalid id ', async () => {

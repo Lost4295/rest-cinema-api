@@ -12,4 +12,8 @@ export class UtilsController {
         })
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'Hello World request'}))
     }
+
+    ok(req: Request, res: Response) {
+        res.status(200).send({"message": "ok"})
+    }
 }

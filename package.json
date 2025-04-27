@@ -13,7 +13,7 @@
     "start:dev": "nodemon -e ts --exec ts-node src/main.ts",
     "build": "tsc",
     "start": "npm run build && node ./dist/src/main.js",
-    "test": "dotenvx run -f .env.tests -- npm run prisma:reset && jest --coverage && dotenvx run -f .env -- prisma generate --schema=./src/db/schema.prisma",
+    "test": "dotenvx run -f .env.tests -- npm run prisma:reset&& jest --coverage && dotenvx run -f .env -- prisma generate --schema=./src/db/schema.prisma",
     "lint": "eslint .",
     "lint:watch": "onchange '**/*.{js,ts}' -- eslint ."
   },

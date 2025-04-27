@@ -18,7 +18,7 @@ export class CinemaRoomController {
     async post(req: Request, res: Response) {
         const bodyValidator = createCinemaRoomValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            res.status(400).send(bodyValidator.error.message)
+            res.status(400).send({"message": bodyValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.post request fail : validation error'}))
             return
         }
@@ -32,31 +32,37 @@ export class CinemaRoomController {
     async put(req: Request, res: Response) {
         const bodyValidator = updateCinemaRoomValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            res.status(400).send(bodyValidator.error.message)
+            res.status(400).send({"message": bodyValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.put request fail : validation error'}))
-
+            return
+        }
+        const idValidator = cinemaRoomIdValidator.validate(req.params)
+        if (idValidator.error !== undefined) {
+            res.status(400).send({message: idValidator.error.message})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.delete request fail : validation error'}))
             return
         }
         const body = bodyValidator.value
+        const id = idValidator.value.id
         const room = await db.room.findUnique({
             where: {
-                id: body.id
+                id: id
             }
         })
         if (!room) {
             res.status(404).send({"message": "ressource not found"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.put request fail : ressource not found'}))
+            return
         }
-        await db.room.update({data: body, where: {id: body.id}})
+        await db.room.update({data: body, where: {id: room.id}})
         res.status(200).send({"message": "Ressource modified successfully"})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.put request : success'}))
     }
 
     async delete(req: Request, res: Response) {
-        const idValidator = cinemaRoomIdValidator.validate(req.query)
+        const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
-            console.log(idValidator.error)
-            res.status(400).send(idValidator.error.message)
+            res.status(400).send({message: idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.delete request fail : validation error'}))
             return
         }
@@ -91,7 +97,7 @@ export class CinemaRoomController {
 
         const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send(idValidator.error.message)
+            res.status(400).send({message: idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request fail : validation error'}))
             return
         }
@@ -114,7 +120,11 @@ export class CinemaRoomController {
             return
         }
         let sessions
-        if (perValidator.value !== undefined) {
+        if (isEmpty(perValidator.value)) {
+            sessions = room.sessions.filter((session) => {
+                return moment(session.startDate).isAfter(moment())
+            })
+        } else {
             if (perValidator.value.startDate !== undefined) {
                 sessions = room.sessions.filter((session) => {
                     return moment(session.startDate).isBetween(moment(perValidator.value.startDate), moment(perValidator.value.endDate))
@@ -124,19 +134,15 @@ export class CinemaRoomController {
             if (perValidator.value.allSessions === true) {
                 sessions = room.sessions
             }
-        } else {
-            sessions = room.sessions.filter((session) => {
-                return moment(session.startDate).isAfter(moment())
-            })
         }
-        res.status(200).send({"sessions": sessions})
+        res.status(200).send({"sessions": sessions ?? []})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.getOne request : success'}))
     }
 
     async setMaintenance(req: Request, res: Response) {
         const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send(idValidator.error.message)
+            res.status(400).send({message: idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.setMaintenance request fail : validation error'}))
             return
         }
@@ -166,7 +172,7 @@ export class CinemaRoomController {
     async removeMaintenance(req: Request, res: Response) {
         const idValidator = cinemaRoomIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send(idValidator.error.message)
+            res.status(400).send({message: idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.removeMaintenance request fail : validation error'}))
             return
         }
@@ -192,4 +198,8 @@ export class CinemaRoomController {
         res.status(200).send({"message": "room no longer on maintenance"})
         logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaRoomController.removeMaintenance request success'}))
     }
+}
+
+function isEmpty(obj: {}) {
+    return Object.keys(obj).length === 0
 }
