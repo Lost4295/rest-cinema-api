@@ -97,8 +97,9 @@ model Transaction {
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   date          DateTime
   price         Float
-  ticket        Ticket      @relation(fields: [ticketId], references: [id])
-  ticketId      Int         @unique
-  superTicket   SuperTicket @relation(fields: [superTicketId], references: [id])
-  superTicketId Int         @unique
+  ticket        Ticket?      @relation(fields: [ticketId], references: [id])
+  ticketId      Int?         @unique
+  superTicket   SuperTicket? @relation(fields: [superTicketId], references: [id])
+  superTicketId Int?         @unique
+  isCredit      Boolean     @default(false)
 }

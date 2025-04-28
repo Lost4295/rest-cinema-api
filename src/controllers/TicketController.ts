@@ -29,6 +29,21 @@ export class TicketController {
     }
 
     async buyTicket(req: Request, res: Response) {
+
+        const currentUser = (req as any).user
+        if (!currentUser) {
+            res.status(401).json({message: "Unauthorized"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AddMoney request fail : Unauthorized'}))
+            return
+        }
+        const idValidator = userIdValidator.validate({id: parseInt(currentUser.id)})
+        if (idValidator.error) {
+            res.status(400).json(idValidator.error.details)
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'AddMoney request fail : validation error'}))
+            return
+        }
+        const userId = idValidator.value.id
+
         const validator = ticketCreateValidator.validate(req.query)
         if (validator.error) {
             res.status(400).send(validator.error.details)
@@ -36,9 +51,19 @@ export class TicketController {
             return
         }
         const value = validator.value
-        const userId = 1
-        const notEnoughMoneyToBuyTicket = 0 //TODO : check if the user has enough money to buy the ticket
-        //TODO : check if the user is logged in to get infos,  and if he has enough money
+
+        let priceticket;
+        if (value.superTicket){
+            priceticket = 10
+        }else{
+            priceticket = 5
+        }
+
+        let notEnoughMoneyToBuyTicket = false
+        if(currentUser.money - priceticket > 0){
+            notEnoughMoneyToBuyTicket  = true
+        }
+        
         if (notEnoughMoneyToBuyTicket) {
             res.status(400).send({"message": "not enough money"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request fail : not enough money '}))
@@ -55,9 +80,21 @@ export class TicketController {
                     session: {}
                 }
             })
+
+            await db.transaction.create({
+                data: {
+                    userId: userId,
+                    date : new Date(),
+                    price : priceticket,
+                    superTicketId: ticket.id,
+                    ticketId: undefined,
+                    isCredit: false,
+                }
+            })
+
+
             res.status(200).send({"ticket": ticket, "message": "ticket bought successfully"})
             logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request : success'}))
-            //todo : log
         } else {
             const ticket = await db.ticket.create({
                 data: {
@@ -70,9 +107,19 @@ export class TicketController {
                 }
             })
 
+            await db.transaction.create({
+                data: {
+                    userId: userId,
+                    date : new Date(),
+                    price : priceticket,
+                    superTicketId: undefined,
+                    ticketId: ticket.id,
+                    isCredit: false,
+                }
+            })
+
             res.status(200).send({"ticket": ticket, "message": "ticket bought successfully"})
             logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request : success'}))
-            //todo : log
         }
 
 
