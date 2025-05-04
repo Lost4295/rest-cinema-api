@@ -14,3 +14,27 @@ export interface CinemaSessionBodyWithRelations {
     movie: undefined,
     room: undefined,
 }
+
+export type SessionObject = {
+    room: {
+        id: number;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        description: string;
+        images: string[];
+        type: string;
+        seats: number;
+        disabledAccess: boolean;
+        onMaintenance: boolean
+    }
+} & {
+    startDate: Date;
+    endDate: Date;
+    id: number;
+    movieId: number;
+    roomId: number;
+    createdAt: Date;
+    updatedAt: Date
+}
+

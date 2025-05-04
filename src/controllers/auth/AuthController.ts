@@ -70,9 +70,8 @@ export class AuthController {
         })
 
 
-        res.status(200).json({accessToken})
+        res.status(200).json({token: accessToken})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request : success'}))
-
     }
 
     async register(req: Request, res: Response) {

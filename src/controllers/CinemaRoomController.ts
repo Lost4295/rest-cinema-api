@@ -5,6 +5,7 @@ import formatHTTPLoggerResponse from "../loggerformat"
 import {sessionOptionsValidator} from "../validators/period"
 import {logger} from "../format"
 import moment from "moment"
+import {isEmpty} from "../utils"
 
 const db = new PrismaClient()
 
@@ -200,6 +201,3 @@ export class CinemaRoomController {
     }
 }
 
-function isEmpty(obj: {}) {
-    return Object.keys(obj).length === 0
-}

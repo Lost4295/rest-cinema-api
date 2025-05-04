@@ -10,6 +10,10 @@ export function jfy(data: any) {
     return JSON.parse(JSON.stringify(data))
 }
 
+export function isEmpty(obj: {}) {
+    return Object.keys(obj).length === 0
+}
+
 
 export function isChevauchement(sessions: {
     id: number;

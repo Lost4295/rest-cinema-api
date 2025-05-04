@@ -8,10 +8,7 @@ import moment from "moment/moment";
 
 const db = new PrismaClient()
 
-//TODO : test routes
-
-
-async function createSpecialRoom() {
+export async function createSpecialRoom() {
     return db.room.create({
         select: {id: true},
         data: {

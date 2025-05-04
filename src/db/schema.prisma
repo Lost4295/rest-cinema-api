@@ -96,14 +96,14 @@ model Room {
 }
 
 model Transaction {
-  id          Int          @id @default(autoincrement())
-  userId      Int
-  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date        DateTime     @default(now())
-  price       Float
-  ticket        Ticket?      @relation(fields: [ticketId], references: [id])
+  id            Int          @id @default(autoincrement())
+  userId        Int
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          DateTime     @default(now())
+  price         Float
+  ticket        Ticket?
   ticketId      Int?         @unique
-  superTicket   SuperTicket? @relation(fields: [superTicketId], references: [id])
+  superTicket   SuperTicket?
   superTicketId Int?         @unique
-  isCredit      Boolean     @default(false)
+  isCredit      Boolean      @default(false)
 }

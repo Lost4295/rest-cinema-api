@@ -3,6 +3,7 @@ import {userRoles} from '../types/currentUser'
 import {config} from "../config/config"
 import moment from "moment"
 import {isChevauchement} from "../utils"
+import bcrypt from "bcrypt"
 
 const prisma = new PrismaClient()
 
@@ -89,7 +90,7 @@ async function createUser() {
         await prisma.user.create({
             data: {
                 email: `mail${i}@cinema.com`,
-                password: `password${i}`,
+                password: await bcrypt.hash(`password${i}`, 10),
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 money: Math.floor(Math.random() * 200) + 1,
