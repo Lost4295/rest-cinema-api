@@ -224,8 +224,8 @@ export class UserController {
             await db.transaction.create({
                 data: {
                     userId: user.id,
-                    date : new Date(),
-                    price : body.credit,
+                    date: new Date(),
+                    price: body.credit,
                     superTicketId: undefined,
                     ticketId: undefined,
                     isCredit: true,
@@ -284,8 +284,8 @@ export class UserController {
             await db.transaction.create({
                 data: {
                     userId: user.id,
-                    date : new Date(),
-                    price : body.credit,
+                    date: new Date(),
+                    price: body.credit,
                     superTicketId: undefined,
                     ticketId: undefined,
                     isCredit: false,
@@ -362,7 +362,113 @@ export class UserController {
         }
     }
 
+    async getAllUserUsedAPi(req: Request, res: Response) {
+        try {
+            const users = await db.user.findMany({
+                where: {
+                    requestsDone: {
+                        gt: 0
+                    }
+                },
+                select: {
+                    email: true,
+                    requestsDone: true,
+                    lastAPIUsage: true,
+                }
+            })
+            if (!users) {
+                res.status(404).json({message: "No users found"})
+                logger.error(formatHTTPLoggerResponse(req, res, {message: 'UserController.getAllUserUsedAPi request fail : No users found'}))
+                return
+            }
 
+            res.status(200).json(users)
+            logger.info(formatHTTPLoggerResponse(req, res, {message: 'UserController.getAllUserUsedAPi request : success'}))
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error(error.message)
+            }
+            res.status(500).send({message: "Internal Server Error"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'UserController.getAllUserUsedAPi request fail : Internal Server Error'}))
+        }
+    }
+
+
+    async getUserDetailsAndActivity(req: Request, res: Response) {
+        try {
+            const idValidator = userIdValidator.validate(req.params)
+            if (idValidator.error) {
+                res.status(400).json(idValidator.error.message)
+                logger.error(formatHTTPLoggerResponse(req, res, {message: 'UserController.getUserDetailsAndActivity request fail : validation error'}))
+                return
+            }
+            const id = idValidator.value.id
+
+            const user = await db.user.findUnique({
+                where: {
+                    id: id
+                }
+            })
+
+            if (!user) {
+                res.status(404).json({message: "No user found"})
+                logger.error(formatHTTPLoggerResponse(req, res, {message: 'UserController.getUserDetailsAndActivity request fail : No user found'}))
+                return
+            }
+
+            const listTicketUser = await db.ticket.findMany({
+                where: {
+                    userId: user.id
+                }
+            })
+
+            const sessionIds = new Set()
+            const listParticipatedSessions = []
+            for (const t of listTicketUser) {
+                if (!sessionIds.has(t.sessionId)) {
+                    const session = await db.session.findUnique({
+                        where: {
+                            id: t.sessionId
+                        }
+                    })
+                    if (session) {
+                        listParticipatedSessions.push(session)
+                        sessionIds.add(t.sessionId)
+                    }
+                }
+            }
+
+            const listSuperTicketUser = await db.superTicket.findMany({
+                where: {
+                    userId: user.id
+                },
+                include: {
+                    session: true
+                }
+            })
+
+            for (const t of listSuperTicketUser) {
+                listParticipatedSessions.push(t)
+            }
+
+            const {password, ...userWithoutPassword} = user
+            const dict = {
+                user: userWithoutPassword,
+                activity: listParticipatedSessions
+            }
+
+            res.status(200).json(dict)
+            logger.info(formatHTTPLoggerResponse(req, res, {message: 'getUserDetailsAndActivity request : success'}))
+
+
+        } catch (error) {
+            if (error instanceof Error) {
+                console.error(error.message)
+            }
+            res.status(500).send({message: "Internal Server Error"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'getUserDetailsAndActivity request fail : Internal Server Error'}))
+        }
+    }
 }
 
 

@@ -19,21 +19,20 @@ export class AuthController {
     async login(req: Request, res: Response) {
         const bodyValidator = authValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            console.error(bodyValidator.error)
-            res.status(400).json(bodyValidator.error.message)
+            res.status(400).json({"message": bodyValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request fail : validation error'}))
             return
         }
         const body = bodyValidator.value
         const user = await db.user.findUnique({where: {email: body.email}})
         if (!user) {
-            res.status(404).json({message: "User not found"})
+            res.status(404).json({message: "Invalid password or username"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request fail : user not found'}))
             return
         }
         const isPasswordCorrect = await bcrypt.compare(body.password, user.password)
         if (!isPasswordCorrect) {
-            res.status(401).json({message: "Invalid password"})
+            res.status(401).json({message: "Invalid password or username"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.login request fail : invalid password'}))
             return
         }
@@ -77,8 +76,7 @@ export class AuthController {
     async register(req: Request, res: Response) {
         const bodyValidator = authValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            console.error(bodyValidator.error)
-            res.status(400).json(bodyValidator.error.message)
+            res.status(400).json({"message": bodyValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'AuthController.register request fail : validation error'}))
             return
         }

@@ -228,7 +228,7 @@ export class TicketController {
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.useTicket request fail : session already passed '}))
             return
         }
-        if (!ticket.remainingUses) {
+        if (ticket.used) {
             res.status(400).send({"message": "ticket already used"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.useTicket request fail : ticket already used '}))
             return
@@ -239,23 +239,41 @@ export class TicketController {
                     id: value.id
                 },
                 data: {
-                    sessionId: sessionId
+                    sessionId: sessionId,
+                    used: true
                 }
             })
         } else {
-            await db.superTicket.update({
-                where: {
-                    id: value.id
-                },
-                data: {
-                    session: {
-                        connect: {
-                            id: sessionId
-                        }
+            if (ticket.remainingUses - 1 > 0) {
+                await db.superTicket.update({
+                    where: {
+                        id: value.id
                     },
-                    remainingUses: ticket.remainingUses - 1
-                }
-            })
+                    data: {
+                        session: {
+                            connect: {
+                                id: sessionId
+                            }
+                        },
+                        remainingUses: ticket.remainingUses - 1
+                    }
+                })
+            } else {
+                await db.superTicket.update({
+                    where: {
+                        id: value.id
+                    },
+                    data: {
+                        session: {
+                            connect: {
+                                id: sessionId
+                            }
+                        },
+                        remainingUses: ticket.remainingUses - 1,
+                        used: true
+                    }
+                })
+            }
         }
         res.status(200).send({"message": "ticket used successfully"})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.useTicket request : success'}))

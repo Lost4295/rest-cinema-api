@@ -148,7 +148,6 @@ async function createTicket() {
                             id: tr.superTicket.id
                         },
                         data: {
-                            used: true,
                             remainingUses: tr.superTicket.remainingUses - 1
                         }
                     })
