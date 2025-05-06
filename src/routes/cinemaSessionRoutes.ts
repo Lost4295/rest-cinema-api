@@ -1,15 +1,16 @@
 import {Router} from "express"
 import {CinemaSessionController} from "../controllers/CinemaSessionController"
+import {employeeAuthMiddleware} from "../middleware/auth"
 
 export const cinemaSessionRoutes = Router()
 
 const cinemaSessionController = new CinemaSessionController()
 
 cinemaSessionRoutes.get("/", cinemaSessionController.get)
-cinemaSessionRoutes.post("/", cinemaSessionController.post)
+cinemaSessionRoutes.post("/", employeeAuthMiddleware, cinemaSessionController.post)
 cinemaSessionRoutes.get("/:id", cinemaSessionController.getOne)
-cinemaSessionRoutes.put("/:id", cinemaSessionController.put)
-cinemaSessionRoutes.delete("/:id", cinemaSessionController.delete)
+cinemaSessionRoutes.put("/:id", employeeAuthMiddleware, cinemaSessionController.put)
+cinemaSessionRoutes.delete("/:id", employeeAuthMiddleware, cinemaSessionController.delete)
 cinemaSessionRoutes.get("/:id/tickets", cinemaSessionController.getOneTickets)
 
 export const testCinemaSessionRoutes = Router()

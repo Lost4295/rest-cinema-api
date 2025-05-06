@@ -86,6 +86,7 @@ export const employeeAuthMiddleware = async (req: Request, res: Response, next: 
 
         verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err, user) => {
             if (err) {
+                console.log(err, token)
                 res.status(403).json({message: "Forbidden"})
                 return
             }
@@ -104,7 +105,6 @@ export const employeeAuthMiddleware = async (req: Request, res: Response, next: 
                 userRoles.ADMIN,
                 userRoles.SUPER_ADMIN,
             ]
-
             if (!allowedRoles.includes(currentUser.role)) {
                 res.status(403).json({message: "Forbidden"})
                 return

@@ -11,7 +11,9 @@ export const createUserWithRoleValidator = Joi.object<User>({
 export const userIdValidator = Joi.object({
     id: Joi.number().required()
 }).options({abortEarly: false})
-
+export const optionalUserIdValidator = Joi.object({
+    id: Joi.number().optional()
+}).options({abortEarly: false})
 export const updatePasswordValidator = Joi.object({
     oldPassword: Joi.string().required().min(6).max(20),
     newPassword: Joi.string().required().min(6).max(20)

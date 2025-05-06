@@ -2,7 +2,7 @@ import Joi from "joi"
 
 export const periodValidator = Joi.object({
     startDate: Joi.date().optional(),
-    endDate: Joi.date().when('startDate', {is: Joi.exist(), then: Joi.required()}),
+    endDate: Joi.date().when('startDate', {is: Joi.exist(), then: Joi.required(), otherwise: Joi.forbidden()}),
 }).options({abortEarly: false}).custom((value, helpers) => {
     if (value.startDate > value.endDate) {
         return helpers.message({"custom": "The startDate cannot be after the endDate."})

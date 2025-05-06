@@ -2,7 +2,9 @@ import {Request, Response} from "express"
 import {UserRoles, userRoles} from "../types/currentUser"
 import {PrismaClient} from '../db/client'
 import {
-    createUserWithRoleValidator, creditMoneyValidator, debiteMoneyValidator,
+    createUserWithRoleValidator,
+    creditMoneyValidator,
+    debiteMoneyValidator,
     updatePasswordValidator,
     userIdValidator
 } from "../validators/user"
@@ -429,6 +431,9 @@ export class UserController {
                     const session = await db.session.findUnique({
                         where: {
                             id: t.sessionId
+                        },
+                        include: {
+                            movie: true
                         }
                     })
                     if (session) {
@@ -443,18 +448,32 @@ export class UserController {
                     userId: user.id
                 },
                 include: {
-                    session: true
+                    session: true,
                 }
             })
-
             for (const t of listSuperTicketUser) {
-                listParticipatedSessions.push(t)
+                for (const s of t.session) {
+                    if (!sessionIds.has(s.id)) {
+                        listParticipatedSessions.push(s)
+                    }
+                }
             }
-
+            const list: number[] = []
+            for (const p of listParticipatedSessions) {
+                if (!list.includes(p.movieId)) {
+                    list.push(p.movieId)
+                }
+            }
+            const MovieSee = await db.movie.findMany({
+                where: {
+                    id: {in: list}
+                },
+            })
             const {password, ...userWithoutPassword} = user
             const dict = {
                 user: userWithoutPassword,
-                activity: listParticipatedSessions
+                activity: listParticipatedSessions,
+                movies: MovieSee
             }
 
             res.status(200).json(dict)

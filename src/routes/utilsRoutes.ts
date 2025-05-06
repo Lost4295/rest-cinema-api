@@ -14,7 +14,6 @@ export const utilsRoutes = Router()
 
 utilsRoutes.get("/", utilsController.baseRoute)
 
-
 export const testUtilsRoutes = Router()
 
 testUtilsRoutes.get("/", utilsController.ok)

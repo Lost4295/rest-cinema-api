@@ -1,5 +1,5 @@
 import {Request, Response} from "express"
-import {userIdValidator} from "../validators/user"
+import {optionalUserIdValidator} from "../validators/user"
 import formatHTTPLoggerResponse from "../loggerformat"
 import {PrismaClient, SuperTicket, Ticket} from "../db/client"
 import {ticketCreateValidator, ticketIdValidator, ticketUpdateValidator, ticketUseValidator} from "../validators/ticket"
@@ -11,14 +11,26 @@ const db = new PrismaClient()
 const TICKET_PRICE = config.ticketPrice
 
 export class TicketController {
+    async getAll(req: Request, res: Response) {
+        const tickets = await db.ticket.findMany({})
+        res.status(200).send({"tickets": tickets})
+        logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.getAll request : success'}))
+    }
+
     async get(req: Request, res: Response) {
-        const validator = userIdValidator.validate(req.query)
-        if (validator.error) {
-            res.status(400).send(validator.error.message)
-            logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.get request fail : bad request '}))
-            return
+        //TODO : check roles
+        let value
+        if (true) { // if is admin
+            const validator = optionalUserIdValidator.validate(req.query)
+            if (validator.error) {
+                res.status(400).send(validator.error.message)
+                logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.get request fail : bad request '}))
+                return
+            }
+            value = validator.value.id ?? 0 // else admin self id
+        } else {
+            value = 0 // value == user id
         }
-        const value = validator.value.id
         const tickets = await db.ticket.findMany({
             where: {
                 user: {
@@ -33,7 +45,7 @@ export class TicketController {
     async buyTicket(req: Request, res: Response) {
         const validator = ticketCreateValidator.validate(req.query)
         if (validator.error) {
-            res.status(400).send(validator.error.message)
+            res.status(400).send({"message": validator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request fail : bad request '}))
             return
         }
@@ -66,7 +78,6 @@ export class TicketController {
                     }
                 }
             })
-            res.status(200).send({"message": "ticket bought successfully"})
         } else {
             await db.transaction.create({
                 data: {
@@ -88,17 +99,16 @@ export class TicketController {
                     }
                 }
             })
-            res.status(200).send({"message": "ticket bought successfully"})
         }
+        res.status(201).send({"message": "ticket bought successfully"})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request : success'}))
 
     }
 
-    //Todo : accessible que par les admins
     async modifyTicket(req: Request, res: Response) {
-        const idValidator = ticketIdValidator.validate(req.query)
+        const idValidator = ticketIdValidator.validate(req.params)
         if (idValidator.error !== undefined) {
-            res.status(400).send(idValidator.error.message)
+            res.status(400).send({"message": idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.modifyTicket request fail: validation error'}))
             return
         }
@@ -122,7 +132,7 @@ export class TicketController {
         }
         const bodyValidator = ticketUpdateValidator.validate(req.body)
         if (bodyValidator.error !== undefined) {
-            res.status(400).send(bodyValidator.error.message)
+            res.status(400).send({"message": bodyValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.modifyTicket request fail: validation error'}))
             return
         }
@@ -136,25 +146,31 @@ export class TicketController {
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'TicketController.modifyTicket request : success'}))
     }
 
-    //Todo : accessible que par les admins ou la personne qui a le ticket
     async delete(req: Request, res: Response) {
-        const idValidator = ticketIdValidator.validate(req.query)
+        const idValidator = ticketIdValidator.validate(req.params)
         if (idValidator.error) {
-            console.log(idValidator.error)
-            res.status(400).send(idValidator.error.message)
+            res.status(400).send({"message": idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.delete request fail : validation error'}))
             return
         }
+        //TODO ; check si user est celui qui a le ticket
+        const id = 0
         const value = idValidator.value.id
         let ticket: MyTicket = await db.ticket.findUnique({
             where: {
-                id: value
+                id: value,
+                user: {
+                    id: id
+                }
             }
         })
         if (!ticket) {
             ticket = await db.superTicket.findUnique({
                 where: {
-                    id: value
+                    id: value,
+                    user: {
+                        id: id
+                    }
                 }
             })
         }
@@ -183,13 +199,13 @@ export class TicketController {
     async useTicket(req: Request, res: Response) {
         const validator = ticketIdValidator.validate(req.query)
         if (validator.error) {
-            res.status(400).send(validator.error.message)
+            res.status(400).send({"message": validator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.useTicket request fail : bad request '}))
             return
         }
         const validator2 = ticketUseValidator.validate(req.body)
         if (validator2.error) {
-            res.status(400).send(validator2.error.message)
+            res.status(400).send({"message": validator2.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.useTicket request fail : bad request '}))
             return
         }
@@ -209,7 +225,7 @@ export class TicketController {
             })
         }
         if (!ticket) {
-            res.status(400).send({"message": "ticket not found"})
+            res.status(404).send({"message": "ticket not found"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.useTicket request fail : ticket not found '}))
             return
         }

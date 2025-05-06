@@ -13,5 +13,6 @@ export const cinemaSessionIdValidator = Joi.object<CinemaSessionBody>({
 export const updateCinemaSessionValidator = Joi.object<CinemaSessionBodyWithRelations>({
     startDate: Joi.date().optional(),
     endDate: Joi.date().optional(),
-    movie: Joi.number().optional()
-}).options({abortEarly: false}).or("startDate", "endDate", "movie")
+    movie: Joi.number().optional(),
+    room: Joi.number().optional()
+}).options({abortEarly: false}).or("startDate", "endDate", "movie", "room")

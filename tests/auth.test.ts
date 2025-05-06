@@ -1,31 +1,16 @@
 import {PrismaClient} from '../src/db/client'
-import {afterAll, beforeAll, describe, expect, test} from "@jest/globals";
-import bcrypt from "bcrypt";
-import {userRoles} from "../src/types/currentUser";
+import {afterAll, describe, expect, test} from "@jest/globals";
 import request from "supertest";
 import app from "../src/app";
 import {authValidator} from "../src/validators/auth";
 
 const db = new PrismaClient()
 
-beforeAll(async () => {
-
-    await db.user.create({
-        data: {
-            email: `classic@cinema.com`,
-            password: await bcrypt.hash(`classic`, 10),
-            roles: userRoles.CLASSIC,
-        },
-    })
-})
 
 afterAll(async () => {
-    await db.user.deleteMany({
+    await db.user.delete({
         where: {
-            OR: [
-                {email: `classic@cinema.com`},
-                {email: "new@cinema.com"}
-            ]
+            email: "new@cinema.com"
         }
     })
 })
@@ -123,7 +108,7 @@ describe("auth tests", () => {
 
     })
     test.skip("refreshToken", () => {
-
+        //TODO finish me
     })
 
 })

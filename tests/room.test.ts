@@ -126,7 +126,6 @@ describe("room controller ", () => {
         let room = await db.room.findFirstOrThrow({where: {description: roomBody.description}})
         const res = await request(app).put("/rooms/" + room.id).send(data)
         room = await db.room.findFirstOrThrow({where: {description: data.description}})
-        console.log(room.id)
         expect(res.statusCode).toEqual(200)
         expect(res.body.message).toEqual("Ressource modified successfully")
         expect(room.description).toEqual(data.description)
@@ -221,7 +220,6 @@ describe("room controller ", () => {
         })
         const res2 = await request(app).get("/rooms/" + id)
         expect(res2.statusCode).toEqual(200)
-        console.log(res2.body.sessions)
         expect(res2.body.sessions).toEqual(filteredSessions)
     })
     it('returns 404 on GET:/rooms/{id}/maintenance/on', async () => {

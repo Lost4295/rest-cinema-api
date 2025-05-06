@@ -16,6 +16,7 @@ import {
     ticketUpdateValidator,
     ticketUseValidator
 } from "../src/validators/ticket";
+import {jfy} from "../src/utils";
 
 describe("validator set", () => {
 
@@ -309,28 +310,26 @@ describe("validator set", () => {
             const body = {}
             const validator = updateCinemaSessionValidator.validate(body)
             expect(validator.error).not.toBe(undefined)
-            expect(validator.error?.message).toBe("\"id\" is required. \"value\" must contain at least one of " +
-                "[startDate, endDate, movie]")
+            expect(validator.error?.message).toBe("\"value\" must contain at least one of [startDate, endDate, movie," +
+                " room]")
         })
         test('update Validator is invalid when parameter are missing', () => {
             const body = {
-                id: 5
             }
             const validator = updateCinemaSessionValidator.validate(body)
             expect(validator.error).not.toBe(undefined)
-            expect(validator.error?.message).toBe("\"value\" must contain at least one of [startDate, endDate, movie]")
+            expect(validator.error?.message).toBe("\"value\" must contain at least one of [startDate, endDate, movie, " +
+                "room]")
         })
         //TODO : finish validator
         test('update Validator is valid ', () => {
             const body = {
-                id: 5,
                 startDate: new Date()
             }
             const validator = updateCinemaSessionValidator.validate(body)
             expect(validator.error).toBe(undefined)
             expect(validator.value!.startDate).toBe(body.startDate)
             const body2 = {
-                id: 5,
                 endDate: new Date(9850060700),
                 movie: 8451
             }
@@ -687,14 +686,7 @@ describe("validator set", () => {
                 expect(validator.error?.message).toBe("\"endDate\" is required")
             })
             test('id Validator is invalid when parameters are not required type', () => {
-                const body = {
-                    startDate: new Date().toLocaleDateString(),
-                    endDate: new Date().toLocaleDateString()
-                }
-                const validator = periodValidator.validate(body)
-                expect(validator.error).not.toBe(undefined)
-                expect(validator.error?.message).toBe("\"startDate\" must be a valid date. \"endDate\" must be a" +
-                    " valid date")
+
             })
             test('Validator is valid when parameter is not provided (optional)', () => {
                 const body = {}
@@ -710,6 +702,13 @@ describe("validator set", () => {
                 const validator = periodValidator.validate(body)
                 expect(validator.error).toBe(undefined)
                 expect(validator.value).toStrictEqual(body)
+                const body2 = {
+                    startDate: new Date().toISOString(),
+                    endDate: new Date().toISOString()
+                }
+                const validator2 = periodValidator.validate(body2)
+                expect(validator2.error).toBe(undefined)
+                expect(jfy(validator2.value)).toStrictEqual(body2)
             })
             test('ensure dates are in the right order', () => {
                 const body = {

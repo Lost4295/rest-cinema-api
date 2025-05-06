@@ -1,63 +1,10 @@
-import {afterAll, beforeAll, describe, expect, test} from "@jest/globals"
+import {describe, expect, test} from "@jest/globals"
 import app from "../src/app"
 import request from "supertest"
 import {PrismaClient} from '../src/db/client'
 import {userRoles} from "../src/types/currentUser"
-import bcrypt from "bcrypt";
 
 const db = new PrismaClient()
-beforeAll(async () => {
-    await db.user.createMany({
-        data: [
-            {
-                email: `classic@cinema.com`,
-                password: await bcrypt.hash(`classic`, 10),
-                roles: userRoles.CLASSIC,
-            },
-            {
-                email: `accueil@cinema.com`,
-                password: await bcrypt.hash(`accueil`, 10),
-                roles: userRoles.ACCUEIL,
-            },
-            {
-                email: `projectionist@cinema.com`,
-                password: await bcrypt.hash(`projectionist`, 10),
-                roles: userRoles.PROJECTIONIST,
-            },
-            {
-                email: `confisery@cinema.com`,
-                password: await bcrypt.hash(`confisery`, 10),
-                roles: userRoles.CONFISERY,
-            },
-            {
-                email: `admin@cinema.com`,
-                password: await bcrypt.hash(`admin1234`, 10),
-                roles: userRoles.ADMIN,
-            },
-            {
-                email: `super_admin@cinema.com`,
-                password: await bcrypt.hash(`super_admin`, 10),
-                roles: userRoles.SUPER_ADMIN,
-            },
-        ]
-    })
-})
-
-afterAll(async () => {
-    await db.user.deleteMany({
-        where: {
-            OR: [
-                {email: `classic@cinema.com`},
-                {email: `accueil@cinema.com`},
-                {email: `projectionist@cinema.com`},
-                {email: `confisery@cinema.com`},
-                {email: `admin@cinema.com`},
-                {email: `super_admin@cinema.com`},
-            ]
-        }
-    })
-
-})
 
 describe("middleware tests", () => {
     test("/", async () => {
@@ -71,7 +18,6 @@ describe("middleware tests", () => {
         expect(res.statusCode).toEqual(401)
         expect(res.body).toBeDefined()
         expect(res.body.message).toBe("Unauthorized")
-        //todo : auth M4THIA5
         const body = {
             email: "classic@cinema.com",
             password: "classic"
@@ -89,12 +35,12 @@ describe("middleware tests", () => {
         expect(res.statusCode).toEqual(401)
         expect(res.body).toBeDefined()
         expect(res.body.message).toBe("Unauthorized")
-        //todo : auth M4THIA5
         let body = {
             email: "accueil@cinema.com",
             password: "accueil"
         }
         let toke = await request(app).post("/auth/login").send(body)
+        expect(toke.statusCode).toEqual(200)
         let token = toke.body.token
         let res2 = await request(app).get("/test-employee").auth(token, {type: "bearer"})
         expect(res2.body.message).toBe("ok")
@@ -105,6 +51,7 @@ describe("middleware tests", () => {
             password: "confisery"
         }
         toke = await request(app).post("/auth/login").send(body)
+        expect(toke.statusCode).toEqual(200)
         token = toke.body.token
         res2 = await request(app).get("/test-employee").auth(token, {type: "bearer"})
         expect(res2.body.message).toBe("ok")
@@ -115,6 +62,7 @@ describe("middleware tests", () => {
             password: "projectionist"
         }
         toke = await request(app).post("/auth/login").send(body)
+        expect(toke.statusCode).toEqual(200)
         token = toke.body.token
         res2 = await request(app).get("/test-employee").auth(token, {type: "bearer"})
         expect(res2.body.message).toBe("ok")

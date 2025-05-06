@@ -23,7 +23,7 @@ export function isChevauchement(sessions: {
     startDate: Date;
     endDate: Date;
     roomId: number;
-}[], body: { startDate: Date, endDate: Date, roomId: number, movieId: number }): boolean {
+}[], body: { startDate: Date, endDate: Date, room: number, movie: number }): boolean {
     const momentstart = moment(body.startDate)
     const endmoment = moment(body.endDate)
     for (const session of sessions) {
@@ -31,9 +31,23 @@ export function isChevauchement(sessions: {
         const end = moment(session.endDate)
         const sessionRange = momentRanger.range(start, end)
         const testedRange = momentRanger.range(momentstart, endmoment)
-        if (sessionRange.overlaps(testedRange) && ((body.roomId === session.roomId) || (body.movieId === session.movieId))) {
+        if (start.isSame(momentstart) && end.isSame(endmoment)) {
+            return true
+        }
+        if (sessionRange.overlaps(testedRange) && ((body.room === session.roomId) || (body.movie === session.movieId))) {
             return true
         }
     }
     return false
+}
+
+export async function deleteAll() {
+    await db.session.deleteMany()
+    await db.user.deleteMany()
+    await db.movie.deleteMany()
+    await db.ticket.deleteMany()
+    await db.superTicket.deleteMany()
+    await db.room.deleteMany()
+    await db.ticket.deleteMany()
+    await db.token.deleteMany()
 }

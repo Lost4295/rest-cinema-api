@@ -64,8 +64,8 @@ async function createSession() {
         const body = {
             startDate: new Date(date),
             endDate: new Date(endDate),
-            movieId: id,
-            roomId: roomID
+            movie: id,
+            room: roomID
         }
         if (isChevauchement(sessions, body)) {
             continue
@@ -98,9 +98,43 @@ async function createUser() {
             }
         })
     }
+    await prisma.user.createMany({
+        data: [
+            {
+                email: `classic@cinema.com`,
+                password: await bcrypt.hash(`classic`, 10),
+                roles: userRoles.CLASSIC,
+            },
+            {
+                email: `accueil@cinema.com`,
+                password: await bcrypt.hash(`accueil`, 10),
+                roles: userRoles.ACCUEIL,
+            },
+            {
+                email: `projectionist@cinema.com`,
+                password: await bcrypt.hash(`projectionist`, 10),
+                roles: userRoles.PROJECTIONIST,
+            },
+            {
+                email: `confisery@cinema.com`,
+                password: await bcrypt.hash(`confisery`, 10),
+                roles: userRoles.CONFISERY,
+            },
+            {
+                email: `admin@cinema.com`,
+                password: await bcrypt.hash(`admin1234`, 10),
+                roles: userRoles.ADMIN,
+            },
+            {
+                email: `super_admin@cinema.com`,
+                password: await bcrypt.hash(`super_admin`, 10),
+                roles: userRoles.SUPER_ADMIN,
+            },
+        ]
+    })
 }
 
-async function createTicket() {
+export async function createTicket() {
     console.log("Adding tickets")
     // create tickets for them randomly
     for (let i = 6; i <= 8; i++) {
@@ -199,7 +233,7 @@ async function createTicket() {
     }
 }
 
-async function main() {
+export async function main() {
     await createMovie()
     await createRoom()
     await createSession()

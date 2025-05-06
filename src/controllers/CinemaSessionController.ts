@@ -10,18 +10,45 @@ import {sessionOptionsValidator} from "../validators/period"
 import {logger} from "../format"
 import moment from "moment"
 import {isChevauchement, isEmpty} from "../utils"
-import {CinemaSessionBodyWithRelations, SessionObject} from "../types/cinemaSession"
+import {CinemaSessionBodyWithRelations} from "../types/cinemaSession"
 
 const db = new PrismaClient()
 
-function merger(session: SessionObject, body: CinemaSessionBodyWithRelations) {
+function merger(session: any, body: CinemaSessionBodyWithRelations) {
 
     return {
         endDate: body.endDate ? body.endDate : session.endDate,
-        movieId: session.movieId,
-        roomId: session.roomId,
+        room: body.room ? body.room : session.roomId,
+        movie: body.movie ? body.movie : session.movieId,
         startDate: body.startDate ? body.startDate : session.startDate
     }
+}
+
+function createProperBody(body: CinemaSessionBodyWithRelations): object {
+    const finalObject: {
+        startDate?: Date,
+        endDate?: Date,
+        movie?: any,
+        room?: any
+    } = {
+        startDate: undefined,
+        endDate: undefined,
+        movie: undefined,
+        room: undefined
+    }
+    if (body.startDate !== undefined) {
+        finalObject.startDate = body.startDate
+    }
+    if (body.endDate !== undefined) {
+        finalObject.endDate = body.endDate
+    }
+    if (body.movie !== undefined) {
+        finalObject.movie = {connect: {id: body.movie}}
+    }
+    if (body.room !== undefined) {
+        finalObject.room = {connect: {id: body.room}}
+    }
+    return finalObject
 }
 
 export class CinemaSessionController {
@@ -129,7 +156,7 @@ export class CinemaSessionController {
         const body = bodyValidator.value
         const session = await db.session.findUnique({
             where: {
-                id: body.id,
+                id: idValidator.value.id,
                 room: {onMaintenance: false}
             },
             include: {
@@ -137,27 +164,29 @@ export class CinemaSessionController {
             }
         })
         if (!session) {
-            res.status(404).send({"message": "ressource not found"})
+            res.status(404).send({"message": "Ressource not found"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.put request fail : ressource not found'}))
             return
         }
-        const sessions = await db.session.findMany()
-        if (isChevauchement(sessions, merger(session, body))) {
+        const sessions = await db.session.findMany({
+            where: {NOT: {id: session.id}}
+        })
+        const sessionBody = merger(session, body)
+        if (isChevauchement(sessions, sessionBody)) {
             res.status(401).send({"message": "Session overlapping. Action impossible"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.post request fail : Session overlapping'}))
             return
         }
-        await db.session.update({data: body, where: {id: body.id}})
+        await db.session.update({data: createProperBody(body), where: {id: idValidator.value.id}})
         res.status(200).send({"message": "Ressource modified successfully"})
         logger.info(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.put request : success'}))
     }
 
 
     async delete(req: Request, res: Response) {
-        const idValidator = cinemaSessionIdValidator.validate(req.query)
-        if (idValidator.error) {
-            console.log(idValidator.error)
-            res.status(400).send({"messsage": idValidator.error.message})
+        const idValidator = cinemaSessionIdValidator.validate(req.params)
+        if (idValidator.error !== undefined) {
+            res.status(400).send({"message": idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.delete request fail : validation error'}))
             return
         }
@@ -185,7 +214,7 @@ export class CinemaSessionController {
     async getOneTickets(req: Request, res: Response) {
         const idValidator = cinemaSessionIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send({"messsage": idValidator.error.message})
+            res.status(400).send({"message": idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOneTickets request fail : validation error'}))
             return
         }
@@ -216,7 +245,7 @@ export class CinemaSessionController {
     async getOne(req: Request, res: Response) {
         const idValidator = cinemaSessionIdValidator.validate(req.params)
         if (idValidator.error) {
-            res.status(400).send({"messsage": idValidator.error.message})
+            res.status(400).send({"message": idValidator.error.message})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'CinemaSessionController.getOne request fail : validation error'}))
             return
         }

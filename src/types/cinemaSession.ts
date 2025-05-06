@@ -11,8 +11,16 @@ export interface CinemaSessionBodyWithRelations {
     id: number,
     startDate: Date,
     endDate: Date,
-    movie: undefined,
-    room: undefined,
+    movie: number,
+    room: number,
+}
+
+
+export interface TypeSession {
+    startDate: Date,
+    endDate: Date,
+    movie: number,
+    room: number,
 }
 
 export type SessionObject = {
@@ -32,8 +40,8 @@ export type SessionObject = {
     startDate: Date;
     endDate: Date;
     id: number;
-    movieId: number;
-    roomId: number;
+    movie: number;
+    room: number;
     createdAt: Date;
     updatedAt: Date
 }
