@@ -1,6 +1,6 @@
 import {Router} from "express"
 import {MovieController} from "../controllers/MovieController"
-import {employeeAuthMiddleware} from "../middleware/auth";
+import {employeeAuthMiddleware} from "../middleware/auth"
 
 export const movieRoutes = Router()
 

@@ -217,17 +217,6 @@ describe('session controller :', () => {
             roomId: 2,
         }
         await request(app).post("/sessions/").send(data)
-        const sess = await db.session.findFirstOrThrow({
-            where: {
-                startDate: stDate,
-                endDate: enDate,
-                movieId: 2,
-                roomId: 2,
-            },
-            select: {
-                id: true
-            }
-        })
         const res = await request(app).delete("/sessions/" + 989999)
         expect(res.statusCode).toEqual(404)
         expect(res.body.message).toEqual("ressource not found")

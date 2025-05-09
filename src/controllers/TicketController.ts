@@ -5,7 +5,7 @@ import {PrismaClient, SuperTicket, Ticket} from "../db/client"
 import {ticketCreateValidator, ticketIdValidator, ticketUpdateValidator, ticketUseValidator} from "../validators/ticket"
 import {config} from "../config/config"
 import {logger} from "../format"
-
+import {CurrentUser, userRoles} from "../types/currentUser"
 
 const db = new PrismaClient()
 const TICKET_PRICE = config.ticketPrice
@@ -18,18 +18,28 @@ export class TicketController {
     }
 
     async get(req: Request, res: Response) {
-        //TODO : check roles
+        const user: CurrentUser = (req as any).user
+        const databaseUser = await db.user.findUnique({
+            where: {
+                id: user.id
+            }
+        })
+        if (!databaseUser) {
+            res.status(404).send({"message": "user not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.delete request fail : user not found'}))
+            return
+        }
         let value
-        if (true) { // if is admin
+        if (user.role == userRoles.ADMIN || user.role == userRoles.SUPER_ADMIN) {
             const validator = optionalUserIdValidator.validate(req.query)
             if (validator.error) {
                 res.status(400).send(validator.error.message)
                 logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.get request fail : bad request '}))
                 return
             }
-            value = validator.value.id ?? 0 // else admin self id
+            value = validator.value.id ?? user.id
         } else {
-            value = 0 // value == user id
+            value = user.id
         }
         const tickets = await db.ticket.findMany({
             where: {
@@ -50,10 +60,19 @@ export class TicketController {
             return
         }
         const value = validator.value
-        const userId = 1
-        const notEnoughMoneyToBuyTicket = 0 //TODO : check if the user has enough money to buy the ticket
-        //TODO : check if the user is logged in to get infos,  and if he has enough money
-        if (notEnoughMoneyToBuyTicket) {
+        const user: CurrentUser = (req as any).user
+        const databaseUser = await db.user.findUnique({
+            where: {
+                id: user.id
+            }
+        })
+        if (!databaseUser) {
+            res.status(404).send({"message": "user not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.delete request fail : user not found'}))
+            return
+        }
+        const notEnoughMoneyToBuyTicket = databaseUser.money - (value.superTicket ? TICKET_PRICE * 4 : TICKET_PRICE)
+        if (notEnoughMoneyToBuyTicket <= 0) {
             res.status(400).send({"message": "not enough money"})
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.buyTicket request fail : not enough money '}))
             return
@@ -63,15 +82,15 @@ export class TicketController {
                 data: {
                     user: {
                         connect: {
-                            id: userId
+                            id: user.id
                         }
                     },
-                    price: TICKET_PRICE, //????
+                    price: TICKET_PRICE * 4,
                     superTicket: {
                         create: {
                             user: {
                                 connect: {
-                                    id: userId
+                                    id: user.id
                                 }
                             },
                         }
@@ -83,15 +102,15 @@ export class TicketController {
                 data: {
                     user: {
                         connect: {
-                            id: userId
+                            id: user.id
                         }
                     },
-                    price: TICKET_PRICE, //????
+                    price: TICKET_PRICE,
                     ticket: {
                         create: {
                             user: {
                                 connect: {
-                                    id: userId
+                                    id: user.id
                                 }
                             },
                             session: {}
@@ -153,14 +172,23 @@ export class TicketController {
             logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.delete request fail : validation error'}))
             return
         }
-        //TODO ; check si user est celui qui a le ticket
-        const id = 0
+        const user: CurrentUser = (req as any).user
+        const databaseUser = await db.user.findUnique({
+            where: {
+                id: user.id
+            }
+        })
+        if (!databaseUser) {
+            res.status(404).send({"message": "user not found"})
+            logger.error(formatHTTPLoggerResponse(req, res, {message: 'TicketController.delete request fail : user not found'}))
+            return
+        }
         const value = idValidator.value.id
         let ticket: MyTicket = await db.ticket.findUnique({
             where: {
                 id: value,
                 user: {
-                    id: id
+                    id: databaseUser.id
                 }
             }
         })
@@ -169,7 +197,7 @@ export class TicketController {
                 where: {
                     id: value,
                     user: {
-                        id: id
+                        id: databaseUser.id
                     }
                 }
             })

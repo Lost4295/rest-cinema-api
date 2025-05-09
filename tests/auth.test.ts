@@ -29,7 +29,6 @@ describe("auth tests", () => {
             email: 'classique@cinema.com',
             password: 'classic'
         }
-        const bodyValidator = authValidator.validate(body)
         const req = await request(app).post("/auth/login").send(body)
         expect(req.statusCode).toBe(404)
         expect(req.body.message).toBe("Invalid password or username")
@@ -101,8 +100,9 @@ describe("auth tests", () => {
             email: 'classic@cinema.com',
             password: 'classic'
         }
-        await request(app).post("/auth/login").send(body)
-        const req = await request(app).get("/auth/logout")
+        const requestObj = request(app)
+        await requestObj.post("/auth/login").send(body)
+        const req = await requestObj.get("/auth/logout")
         expect(req.statusCode).toBe(200)
         expect(req.body.message).toBe("Logged out")
 
