@@ -17,8 +17,8 @@ COPY tsconfig.json ./
 # Exposer le port utilisé par l'API
 EXPOSE 3000
 
-RUN npx tsc && \
-    npm run prisma:generate --schema=./src/db/schema.prisma && \
+RUN npm run prisma:generate --schema=./src/db/schema.prisma && \
+    npx tsc && \
     cp -rp src/db/client dist/db/client
 
 # Lancer l'application via Node.js en mode CommonJS
