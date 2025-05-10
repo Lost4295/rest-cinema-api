@@ -43,7 +43,8 @@ services:
       - ./prometheus:/etc/prometheus
       - prometheus:/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml --web.external-url=https://prometheus.laporteacote.online"
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.external-url=https://prometheus.laporteacote.online'
     ports:
       - "9090:9090"
   loki:
