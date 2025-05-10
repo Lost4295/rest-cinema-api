@@ -119,8 +119,8 @@ export type roomSpec = Tspec.DefineApiSpec<{
                 handler: typeof cinemaRoomController.removeMaintenance,
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
-
         },
+
     }
 }>
 
@@ -255,6 +255,82 @@ export type userSpec = Tspec.DefineApiSpec<{
             delete: {
                 summary: 'Delete a user.',
                 handler: typeof userController.deleteUser,
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    404: { message: string }
+                    500: { message: string }
+                }
+            }
+        },
+        "/users/credit": {
+            get: {
+                summary: 'Add credit to the user.',
+                handler: typeof userController.creditMoney,
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    401: { message: string },
+                    404: { message: string }
+                    500: { message: string }
+                }
+            }
+        },
+        "/users/debite": {
+            get: {
+                summary: 'Debit the user.',
+                handler: typeof userController.debiteMoney,
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    401: { message: string },
+                    404: { message: string }
+                    500: { message: string }
+                }
+            }
+        },
+        "/users/mytransaction": {
+            get: {
+                summary: 'View my transactions.',
+                handler: typeof userController.getMyTransaction,
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    401: { message: string },
+                    404: { message: string }
+                    500: { message: string }
+                }
+            }
+        },
+        "/users/transactions": {
+            get: {
+                summary: 'Get all transactions.',
+                handler: typeof userController.getAllTransaction,
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    401: { message: string },
+                    404: { message: string }
+                    500: { message: string }
+                }
+            }
+        },
+        "/users/all-user-used-api": {
+            get: {
+                summary: 'Get all users from the API.',
+                handler: typeof userController.getAllUserUsedAPi,
+                responses: {
+                    200: { message: string },
+                    400: { message: string },
+                    404: { message: string }
+                    500: { message: string }
+                }
+            }
+        },
+        "/users/:id/user-activity": {
+            get: {
+                summary: 'Get a user\'s activity.',
+                handler: typeof userController.getUserDetailsAndActivity,
                 responses: {
                     200: { message: string },
                     400: { message: string },
