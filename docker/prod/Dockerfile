@@ -1,25 +1,14 @@
-FROM node:18-alpine  AS builder
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-
-RUN npm install
-
-COPY . .
-
-RUN npm run build
-
-
 FROM node:18-alpine
 
+
 WORKDIR /app
-
-COPY package.json package-lock.json ./
-
-RUN npm install --only=production
-
-COPY --from=builder /app/dist ./dist
-
+COPY grafana grafana
+COPY loki loki
+COPY prometheus prometheus
+COPY src src
+COPY tests tests
+COPY .env.production .env
+RUN npm install
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+CMD ["ts-node", "src/index.ts"]
