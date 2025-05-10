@@ -1,9 +1,8 @@
 services:
   app:
-    image: my-app:latest
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: "./docker/prod/Dockerfile"
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -25,6 +24,42 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
+  grafana:
+    container_name: grafana
+    image: grafana/grafana-enterprise
+    environment:
+      - GF_PLUGINS_PREINSTALL=grafana-clock-panel
+    ports:
+      - "7181:3000"
+    volumes:
+      - grafana_volume:/var/lib/grafana
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards
+      - ./grafana/structure.yaml:/etc/grafana/provisioning/dashboards/main.yaml
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+  loki:
+    image: grafana/loki:latest
+    container_name: app_loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./logs:/var/log
+      - ./loki/promtail-config.yaml:/etc/promtail/config.yaml
+    command: -config.file=/etc/promtail/config.yml
 volumes:
   postgres_data:
+  prometheus:
+  grafana_volume:
