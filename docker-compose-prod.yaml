@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: app
     build:
       context: .
       dockerfile: "./docker/prod/Dockerfile"
@@ -36,6 +37,7 @@ services:
       - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards
       - ./grafana/structure.yaml:/etc/grafana/provisioning/dashboards/main.yaml
   prometheus:
+    container_name: prometheus
     image: prom/prometheus
     volumes:
       - ./prometheus:/etc/prometheus
@@ -53,6 +55,7 @@ services:
       - ./loki/loki-config.yaml:/etc/loki/local-config.yaml
     command: -config.file=/etc/loki/local-config.yaml
   promtail:
+    container_name: promtail
     image: grafana/promtail:latest
     volumes:
       - ./logs:/var/log
