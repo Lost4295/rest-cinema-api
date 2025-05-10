@@ -3,3 +3,8 @@ dist
 coverage
 docker
 tests
+logs
+*.sqlite
+.dockerignore
+.git
+.gitignore
