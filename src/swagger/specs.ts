@@ -308,8 +308,6 @@ export type userSpec = Tspec.DefineApiSpec<{
                 handler: typeof userController.getAllTransaction,
                 responses: {
                     200: { message: string },
-                    400: { message: string },
-                    401: { message: string },
                     404: { message: string }
                     500: { message: string }
                 }
