@@ -22,8 +22,6 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
   grafana:
     container_name: grafana
     image: grafana/grafana-enterprise
@@ -33,6 +31,7 @@ services:
       - "7181:3000"
     volumes:
       - grafana_volume:/var/lib/grafana
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/provisioning/dashboards:/var/lib/grafana/dashboards
       - ./grafana/structure.yaml:/etc/grafana/provisioning/dashboards/main.yaml
@@ -42,7 +41,7 @@ services:
       - ./prometheus:/etc/prometheus
       - prometheus:/prometheus
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--config.file=/etc/prometheus/prometheus.yml --web.external-url=https://prometheus.laporteacote.online"
     ports:
       - "9090:9090"
   loki:
