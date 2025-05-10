@@ -31,10 +31,9 @@ services:
     ports:
       - "7181:3000"
     volumes:
-      - grafana_volume:/var/lib/grafana
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/provisioning/dashboards:/files/dashboards
       - ./grafana/structure.yaml:/etc/grafana/provisioning/dashboards/main.yaml
   prometheus:
     container_name: prometheus
