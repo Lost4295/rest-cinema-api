@@ -14,6 +14,20 @@ const movieController = new MovieController()
 const userController = new UserController()
 const ticketController = new TicketController()
 const utilsController = new UtilsController()
+export const tspecParams: Tspec.GenerateParams = {
+    openapi: {
+        securityDefinitions: {
+            jwt: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT',
+            },
+        },
+        title: 'AL Cinéma API',
+        version: '1.0.0',
+        description: "Entrer description",
+    },
+}
 
 export type otherSpec = Tspec.DefineApiSpec<{
     tags: ['Other'],
@@ -29,6 +43,7 @@ export type otherSpec = Tspec.DefineApiSpec<{
 }>
 
 export type sessionSpec = Tspec.DefineApiSpec<{
+    security: 'jwt',
     tags: ['Sessions'],
     paths: {
         '/sessions': {
@@ -51,16 +66,19 @@ export type sessionSpec = Tspec.DefineApiSpec<{
         '/sessions/{id}': {
             get: {
                 summary: 'Get information about a session.',
+                path: { id: number },
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             },
             put: {
                 summary: 'Update a session.',
                 handler: typeof cinemaSessionController.put,
+                path: { id: number },
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
             delete: {
                 summary: 'Delete a session.',
                 handler: typeof cinemaSessionController.delete,
+                path: { id: number },
                 responses: { 204: {}, 400: { message: string }, 404: { message: string } }
             }
         }
@@ -68,6 +86,7 @@ export type sessionSpec = Tspec.DefineApiSpec<{
             get: {
                 summary: 'Get information about the remaining tickets for a session.',
                 handler: typeof cinemaSessionController.getOneTickets,
+                path: { id: number },
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
         }
@@ -75,6 +94,7 @@ export type sessionSpec = Tspec.DefineApiSpec<{
 }>
 
 export type roomSpec = Tspec.DefineApiSpec<{
+    security: 'jwt',
     tags: ['Rooms'],
     paths: {
         '/rooms': {
@@ -93,29 +113,34 @@ export type roomSpec = Tspec.DefineApiSpec<{
             get: {
                 summary: 'Get information about one room.',
                 handler: typeof cinemaRoomController.getOne,
+                path: { id: number },
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             },
             put: {
                 summary: 'Update a room.',
+                path: { id: number },
                 handler: typeof cinemaRoomController.put,
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             },
             delete: {
                 summary: 'Delete a room.',
                 handler: typeof cinemaRoomController.delete,
+                path: { id: number },
                 responses: { 204: {}, 400: { message: string }, 404: { message: string } }
             }
         },
-        "/:id/maintenance/on": {
+        "/{id}/maintenance/on": {
             get: {
                 summary: "Sets the selected room on maintenance. It will not be accessible.",
+                path: { id: number },
                 handler: typeof cinemaRoomController.setMaintenance,
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
         },
-        "/:id/maintenance/off": {
+        "/{id}/maintenance/off": {
             get: {
                 summary: "Sets the selected room off maintenance. It will be available.",
+                path: { id: number },
                 handler: typeof cinemaRoomController.removeMaintenance,
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
@@ -126,6 +151,7 @@ export type roomSpec = Tspec.DefineApiSpec<{
 
 export type movieSpec = Tspec.DefineApiSpec<{
     tags: ['Movies'],
+    security: 'jwt',
     paths: {
         '/movies': {
             get: {
@@ -142,15 +168,18 @@ export type movieSpec = Tspec.DefineApiSpec<{
         '/movies/{id}': {
             get: {
                 summary: 'Get information about one movie.',
+                path: { id: number },
                 handler: typeof movieController.getOne,
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             },
             put: {
                 summary: 'Modify a movie.',
                 handler: typeof movieController.put,
+                path: { id: number },
                 responses: { 200: { message: string }, 400: { message: string }, 404: { message: string } }
             }
             delete: {
+                path: { id: number },
                 summary: 'Delete a movie.',
                 handler: typeof movieController.delete,
                 responses: { 204: { message: string }, 400: { message: string }, 404: { message: string } }
@@ -211,6 +240,7 @@ export type baseSpec = Tspec.DefineApiSpec<{
 }>
 
 export type userSpec = Tspec.DefineApiSpec<{
+    security: 'jwt',
     tags: ['Users'],
     paths: {
         '/users': {
@@ -254,6 +284,7 @@ export type userSpec = Tspec.DefineApiSpec<{
         '/users/{id}': {
             delete: {
                 summary: 'Delete a user.',
+                path: { id: number },
                 handler: typeof userController.deleteUser,
                 responses: {
                     200: { message: string },
@@ -325,8 +356,9 @@ export type userSpec = Tspec.DefineApiSpec<{
                 }
             }
         },
-        "/users/:id/user-activity": {
+        "/users/{id}/user-activity": {
             get: {
+                path: { id: number },
                 summary: 'Get a user\'s activity.',
                 handler: typeof userController.getUserDetailsAndActivity,
                 responses: {
@@ -342,6 +374,7 @@ export type userSpec = Tspec.DefineApiSpec<{
 
 export type ticketSpec = Tspec.DefineApiSpec<{
     tags: ["Tickets"],
+    security: 'jwt',
     paths: {
         '/tickets': {
             get: {
@@ -364,6 +397,7 @@ export type ticketSpec = Tspec.DefineApiSpec<{
         '/tickets/{id}': {
             get: {
                 summary: 'Associate a ticket to a session.',
+                path: { id: number },
                 handler: typeof ticketController.useTicket,
                 responses: {
                     200: { message: string },
@@ -372,6 +406,7 @@ export type ticketSpec = Tspec.DefineApiSpec<{
             },
             put: {
                 summary: 'Modify a ticket',
+                path: { id: number },
                 handler: typeof ticketController.modifyTicket,
                 responses: {
                     200: { message: string },
@@ -382,6 +417,7 @@ export type ticketSpec = Tspec.DefineApiSpec<{
             delete: {
                 summary: 'Delete a ticket.',
                 handler: typeof ticketController.delete,
+                path: { id: number },
                 responses: {
                     204: { message: string },
                     400: { message: string },
