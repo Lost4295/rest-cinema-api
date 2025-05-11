@@ -25,9 +25,9 @@ jobs:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
           POSTGRES_DB: test
-          POSTGRES_PORT: 5432
+          POSTGRES_PORT: 2345
         ports:
-          - 5432/tcp
+          - 2345/tcp
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
     - uses: actions/checkout@v4
