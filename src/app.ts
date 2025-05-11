@@ -6,7 +6,7 @@ import expressPrometheusMiddleware from "express-prometheus-middleware"
 const app = express()
 
 const isTest = process.env.ENV === "test"
-app.use(express.json())
+
 app.use(cookieParser())
 app.use((req, res, next) => {
     res.removeHeader('ETag')
@@ -14,6 +14,7 @@ app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
     next()
 })
+app.use(express.json())
 
 app.use(expressPrometheusMiddleware({
     metricsPath: '/metrics',
