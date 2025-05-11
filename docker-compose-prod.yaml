@@ -18,7 +18,7 @@ services:
     restart: always
 
   postgres:
-    container_name: p
+    container_name: postgres
     image: postgres:15-alpine
     environment:
       POSTGRES_USER: ${DB_USER}
