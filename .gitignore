@@ -2,10 +2,11 @@
 .vscode/
 node_modules/
 dist
-.env
+.env*
 database.sqlite
 coverage
 build/
 tmp/
 temp/
 logs/
+src/db/client

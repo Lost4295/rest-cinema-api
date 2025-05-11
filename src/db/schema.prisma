@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  roles        String
+  money        Float         @default(0)
+  tokens       Token[]
+  tickets      Ticket[]
+  superTickets SuperTicket[]
+  transactions Transaction[]
+  lastAPIUsage DateTime      @default(now()) @updatedAt
+  requestsDone Int           @default(0)
+}
+
+model Ticket {
+  id            Int         @id @default(autoincrement())
+  sessionId     Int
+  session       Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  used          Boolean     @default(false)
+  remainingUses Int         @default(1)
+  isSuperTicket Boolean     @default(false)
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId Int         @unique
+}
+
+model SuperTicket {
+  id            Int         @id @default(autoincrement())
+  session       Session[]
+  userId        Int
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  used          Boolean     @default(false)
+  remainingUses Int         @default(10)
+  isSuperTicket Boolean     @default(true)
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  transactionId Int         @unique
+}
+
+model Token {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Movie {
+  id        Int       @id @default(autoincrement())
+  name      String
+  duration  Int
+  sessions  Session[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Session {
+  id           Int           @id @default(autoincrement())
+  movieId      Int
+  movie        Movie         @relation(fields: [movieId], references: [id], onDelete: Cascade)
+  startDate    DateTime
+  endDate      DateTime
+  tickets      Ticket[]
+  superTickets SuperTicket[]
+  room         Room          @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId       Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Room {
+  id             Int       @id @default(autoincrement())
+  name           String
+  description    String
+  images         String[]
+  type           String
+  seats          Int
+  disabledAccess Boolean
+  onMaintenance  Boolean   @default(false)
+  sessions       Session[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Transaction {
+  id            Int          @id @default(autoincrement())
+  userId        Int
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          DateTime     @default(now())
+  price         Float
+  ticket        Ticket?
+  ticketId      Int?         @unique
+  superTicket   SuperTicket?
+  superTicketId Int?         @unique
+  isCredit      Boolean      @default(false)
+}

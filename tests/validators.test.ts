@@ -6,7 +6,19 @@ import {
     createCinemaSessionValidator,
     updateCinemaSessionValidator
 } from "../src/validators/session"
-import { createUserWithRoleValidator, updatePasswordValidator, userIdValidator } from "../src/validators/user"
+import {createUserWithRoleValidator, updatePasswordValidator, userIdValidator} from "../src/validators/user"
+import {userRoles} from "../src/types/currentUser";
+import {authValidator} from "../src/validators/auth";
+import {periodValidator, sessionOptionsValidator} from "../src/validators/period";
+import {
+    ticketCreateValidator,
+    ticketIdValidator,
+    ticketUpdateValidator,
+    ticketUseValidator
+} from "../src/validators/ticket";
+import {jfy} from "../src/utils";
+
+describe("validator set", () => {
 
 describe("Movie validator : ", () => {
     test('createValidator is invalid when parameter is not provided', () => {
@@ -348,11 +360,12 @@ describe("User validators", () => {
         }
         const validator = createUserWithRoleValidator.validate(body)
         expect(validator.error).not.toBe(undefined)
-        expect(validator.error?.message).toContain("\"email\" must be a string. \"password\" must be a string. \"role\"" +
-            " must be [[object Object]]")
+        expect(validator.error?.message).toContain("\"email\" must be a string")
+        expect(validator.error?.message).toContain("\"password\" must be a string")
+        expect(validator.error?.message).toContain("\"role\" must be one of")
       })
   
-      test.skip("should be valid when all fields are correct", () => {
+      test("should be valid when all fields are correct", () => {
         const body = {
           email: "user@example.com",
           password: "password123",

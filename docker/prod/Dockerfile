@@ -1,25 +1,25 @@
-FROM node:18-alpine  AS builder
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-
-RUN npm install
-
-COPY . .
-
-RUN npm run build
-
-
 FROM node:18-alpine
 
+# Définir le répertoire de travail
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Copier les fichiers de dépendances depuis la racine du projet
+COPY package*.json ./
 
-RUN npm install --only=production
+# Installation des dépendances
+RUN npm install
 
-COPY --from=builder /app/dist ./dist
+# Copier le reste du projet (depuis la racine)
+COPY src ./src
+COPY .env.production .env
+COPY tsconfig.json ./
 
+# Exposer le port utilisé par l'API
 EXPOSE 3000
 
-CMD ["node", "dist/index.js"]
+RUN npm run prisma:generate --schema=./src/db/schema.prisma && \
+    npx tsc && \
+    cp -rp src/db/client dist/db/client
+
+# Lancer l'application via Node.js en mode CommonJS
+CMD ["node", "dist/main.js"]

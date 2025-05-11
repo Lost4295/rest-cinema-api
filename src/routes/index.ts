@@ -1,38 +1,33 @@
-import { Application, Request, Response } from "express"
-import { cinemaSessionRoutes } from "./cinemaSessionRoutes"
-import { cinemaRoomRoutes } from "./cinemaRoomRoutes"
-import { movieRoutes } from "./movieRoutes"
-import { userRoutes } from "./userRoutes"
-import { authRoutes } from "./auth"
-import {logger} from "../app"
-import formatHTTPLoggerResponse from "../loggerformat"
+import {Application} from "express"
+import {cinemaSessionRoutes, testCinemaSessionRoutes} from "./cinemaSessionRoutes"
+import {cinemaRoomRoutes, testCinemaRoomRoutes} from "./cinemaRoomRoutes"
+import {movieRoutes, testMovieRoutes} from "./movieRoutes"
+import {testUserRoutes, userRoutes} from "./userRoutes"
+import {authRoutes, testAuthRoutes} from "./auth"
+import {testTicketRoutes, ticketRoutes} from "./ticketRoutes"
+import {testUtilsRoutes, utilsRoutes} from "./utilsRoutes"
+import {classicAuthMiddleware} from "../middleware/auth"
 
-
-export const routesHandler = (app: Application) => {
-    app.get('/', (req: Request, res: Response) => {
-        const rand = Number((Math.random() * 10 % 2).toFixed())
-        if (rand == 0) {
-            res.status(200).send({message: 'Hello World'})
-            logger.info(formatHTTPLoggerResponse(req, res, {message: 'Hello World request'}))
-        } else if (rand == 1) {
-            res.status(400).send({message: 'Client Error !'})
-            logger.error(formatHTTPLoggerResponse(req, res, {message: 'Hello World request fail'}))
-        } else {
-            res.status(500).send({message: 'Server error'})
-            logger.error(formatHTTPLoggerResponse(req, res, {message: 'Hello World request fail'}))
-        }
-
-    })
-  app.use('/auth', authRoutes)
-  app.use('/sessions', cinemaSessionRoutes)
-  app.use('/rooms', cinemaRoomRoutes)
-  app.use('/movies', movieRoutes)
-      
-  app.use('/users', userRoutes)
-
+export const routesHandler = (app: Application, isTest: boolean) => {
+    if (!isTest) {
+        app.use('/', utilsRoutes)
+        app.use('/auth', authRoutes)
+        app.use('/sessions', classicAuthMiddleware, cinemaSessionRoutes)
+        app.use('/rooms', classicAuthMiddleware, cinemaRoomRoutes)
+        app.use('/movies', classicAuthMiddleware, movieRoutes)
+        app.use('/users', classicAuthMiddleware, userRoutes)
+        app.use('/tickets', classicAuthMiddleware, ticketRoutes)
+    } else {
+        app.use('/', testUtilsRoutes)
+        app.use('/auth', testAuthRoutes)
+        app.use('/sessions', testCinemaSessionRoutes)
+        app.use('/rooms', testCinemaRoomRoutes)
+        app.use('/movies', testMovieRoutes)
+        app.use('/users', testUserRoutes)
+        app.use('/tickets', testTicketRoutes)
+    }
     // app.use('/administrators', administratorRoutes)
     // app.use('/employees', employeeRoutes)
 
-    // app.use('/tickets', ticketRoutes)
     // app.use('/stats', statsRoutes)
 }

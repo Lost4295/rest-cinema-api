@@ -1,5 +1,5 @@
 import Joi from "joi"
-import {MovieBody} from "../db/models/Movie"
+import {MovieBody} from "../types/movieBody"
 
 export const createMovieValidator = Joi.object<MovieBody>({
     name: Joi.string().required(),
@@ -13,3 +13,4 @@ export const updateMovieValidator = Joi.object<MovieBody>({
     name: Joi.string().optional(),
     duration: Joi.number().optional(),
 }).options({abortEarly:false}).or('name', 'duration')
+

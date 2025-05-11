@@ -11,7 +11,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_esgi_data:/var/lib/postgresql/data
-
+  db-test:
+    image: postgres
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - "2345:5432"
   adminer:
     image: adminer
     container_name: adminer_ui_dev
@@ -76,7 +83,7 @@ services:
     volumes:
       - ./logs:/var/log
       - ./loki/promtail-config.yaml:/etc/promtail/config.yaml
-    command: -config.file=/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yaml
 volumes:
   postgres_esgi_data:
   prometheus:

@@ -166,7 +166,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum(count_over_time(({service_name=\"varlogs\"})[$__interval]))",
+          "expr": "sum(count_over_time(({service_name=\"app\"})[$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -251,7 +251,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum(count_over_time(({service_name=\"varlogs\"} |~ \"(?i)$searchable_pattern\")[$__interval]))",
+          "expr": "sum(count_over_time(({service_name=\"app\"} |~ \"(?i)$searchable_pattern\")[$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -292,7 +292,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{service_name=\"varlogs\"} |~ \"(?i)$searchable_pattern\" ",
+          "expr": "{service_name=\"app\"} |~ \"(?i)$searchable_pattern\" ",
           "queryType": "range",
           "refId": "A"
         }
@@ -381,7 +381,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum(count_over_time(({service_name=\"varlogs\"})[$__interval])) by (stream)",
+          "expr": "sum(count_over_time(({service_name=\"app\"})[$__interval])) by (stream)",
           "queryType": "range",
           "refId": "A"
         }
@@ -448,7 +448,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum(count_over_time(({service_name=\"varlogs\"} |~ \"(?i)$searchable_pattern\")[$__interval])) by (pod)",
+          "expr": "sum(count_over_time(({service_name=\"app\"} |~ \"(?i)$searchable_pattern\")[$__interval])) by (pod)",
           "queryType": "range",
           "refId": "A"
         }
@@ -530,7 +530,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum(count_over_time(({service_name=\"varlogs\"} |~ \"(?i)$searchable_pattern\")[$__interval])) * 100 / sum(count_over_time(({service_name=\"varlogs\"})[$__interval]))",
+          "expr": "sum(count_over_time(({service_name=\"app\"} |~ \"(?i)$searchable_pattern\")[$__interval])) * 100 / sum(count_over_time(({service_name=\"app\"})[$__interval]))",
           "queryType": "range",
           "refId": "A"
         }
@@ -633,7 +633,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum(count_over_time(({service_name=\"varlogs\"} |~ \"(?i)$searchable_pattern\")[$__interval])) by (pod)",
+          "expr": "sum(count_over_time(({service_name=\"app\"} |~ \"(?i)$searchable_pattern\")[$__interval])) by (pod)",
           "queryType": "range",
           "refId": "A"
         }
@@ -735,7 +735,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum(rate(({service_name=\"varlogs\"} |~ \"(?i)$searchable_pattern\")[30s])) by (pod)",
+          "expr": "sum(rate(({service_name=\"app\"} |~ \"(?i)$searchable_pattern\")[30s])) by (pod)",
           "queryType": "range",
           "refId": "A"
         }
@@ -875,7 +875,7 @@
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "sum(count_over_time(({service_name=\"varlogs\"})[$__interval])) by (stream)",
+          "expr": "sum(count_over_time(({service_name=\"app\"})[$__interval])) by (stream)",
           "queryType": "range",
           "refId": "A"
         }

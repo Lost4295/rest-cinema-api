@@ -9,3 +9,11 @@ describe('sum module', () => {
     });
 });
 
+describe("params", () => {
+    test('example test', () => {
+
+        expect(process.env.ENV).toBe('test');
+
+    });
+})
+
