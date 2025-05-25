@@ -18,6 +18,7 @@ COPY tsconfig.json ./
 EXPOSE 3000
 
 RUN npm run prisma:generate --schema=./src/db/schema.prisma && \
+    npm run db:sync && \
     npx tsc && \
     cp -rp src/db/client dist/db/client
 
